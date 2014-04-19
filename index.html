@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>My Last.fm MooTools Project</title>
+
+        <style>
+            .date {
+                display:  inline-block;
+                margin:  0 5px 0 0;
+            }
+            .date:after {
+                content: ' :'
+            }
+            .artist {
+                display:  inline-block;
+                margin:  0 5px 0 0;
+            }
+            .artist:after {
+                content: ' - '
+            }
+            .name {
+                display:  inline-block;
+                margin:  0 5px 0 0;
+            }
+        </style>
+
+    </head>
+    <body>
+        
+        <h1>My Last.fm MooTools Project</h1>
+        <p>Learning how to use <a href="http://mootools.net/">MooTools</a> in a cool way...</p>
+        <p>All track plays through <a href="http://www.deezer.com">Deezer</a> are tracked using the Last.fm AudioScrobbler.</p>
+
+        <h2>My recent tracks</h2>
+        <ul id="recentTracks"><!-- placeholder for the track history --></ul>
+
+        <h4>Plans</h4>
+        <ul>
+            <li>Learn more about <a href="http://mootools.net/docs/core/Core/Core">MooTools</a>.</li>
+            <li>Pagination: add in multiple pages to browse through the history of tracks.</li>
+            <li>Make it look nice.</li>
+            <li>Split up the files into CSS, JavaScript, HTML, etc</li>
+        </ul>
+
+        <address>Updated: 2014-04-19 <a href="http://twitter.com/johanbove">@johanbove</a></address>
+
+        <script src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
+
+        <script>
+
+            // @see http://mootools.net/docs/core/Utilities/DOMReady
+            window.addEvent('domready', function () {
+
+                //console.info("domReady!");
+
+                var username = 'joe-1',
+                    apiKey = '6944bec73e711c56ae9955c77d642c98',
+
+                // @see http://mootools.net/docs/core/Element/Element
+                    recentTracks = $('recentTracks'),
+
+                    addRecentTracks = function (tracks) {
+
+                        // @see http://mootools.net/docs/core/Types/Array
+                        tracks.each(function (track) {
+
+                            // @see http://mootools.net/docs/core/Element/Element
+                            var el = new Element('li.track'),
+                                a = new Element('a', {
+                                    href: track.url
+                                }).inject(el),
+                                date = new Element('span.date', { 'html': track.date['#text'] }).inject(a),
+                                artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(a),
+                                name = new Element('span.name', { 'html': track.name }).inject(a);
+
+                            console.info("Track", track);
+
+                            el.inject(recentTracks);
+
+                        });
+
+                    },
+
+                    getRecentTracks = function () {
+
+                        // @see http://mootools.net/docs/core/Request/Request.JSON
+                        var request = new Request.JSON({
+
+                            url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + username + '&api_key=' + apiKey + '&format=json',
+
+                            onRequest: function () {
+                                console.info('onRequest');
+                                recentTracks.set('text', 'Loading...');
+                            },
+
+                            onSuccess: function (jsonObj) {
+                                console.info('onSuccess');
+                                recentTracks.empty();
+                                addRecentTracks(jsonObj.recenttracks.track);
+                            },
+
+                            onComplete: function (jsonObj) {
+                                console.info('onComplete', jsonObj);
+                            },
+
+                            onError: function (text, error) {
+                                console.error(text, error);
+                            },
+
+                            onFailure: function (xhr) {
+                                console.error(xhr);
+                            }
+
+                            /* For testing
+                            , data: {
+                            json: JSON.encode(data)
+                            }
+                            */
+
+                        }).send();
+
+                    };
+
+                getRecentTracks();
+
+            });
+
+        </script>
+
+    </body>
+</html>

@@ -1,0 +1,26 @@
+body {
+    font-family:  consolas, monospace;
+}
+
+.date,
+.artist,
+.name,
+.album {
+    display:  inline-block;
+    margin:  0 5px 0 0;
+}
+.date:after {
+    content: ' :';
+}            
+.artist:after {
+    content: ' - ';
+}
+.album:before {
+    content: ' (';
+}
+.album:after {
+    content:  ')';
+}
+.numberInput {
+    width: 40px;
+}

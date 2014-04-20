@@ -5,129 +5,40 @@
         <meta charset="utf-8" />
         <title>My Last.fm MooTools Project</title>
 
-        <style>
-            .date {
-                display:  inline-block;
-                margin:  0 5px 0 0;
-            }
-            .date:after {
-                content: ' :'
-            }
-            .artist {
-                display:  inline-block;
-                margin:  0 5px 0 0;
-            }
-            .artist:after {
-                content: ' - '
-            }
-            .name {
-                display:  inline-block;
-                margin:  0 5px 0 0;
-            }
-        </style>
+        <link rel="stylesheet" href="StyleSheet.css">
 
     </head>
     <body>
         
         <h1>My Last.fm MooTools Project</h1>
-        <p>Learning how to use <a href="http://mootools.net/">MooTools</a> in a cool way...</p>
-        <p>All track plays through <a href="http://www.deezer.com">Deezer</a> are tracked using the Last.fm AudioScrobbler.</p>
+        <p>Learning <a href="http://mootools.net/">MooTools</a>...</p>
+        <p>All registered plays are tracked using the <a href="http://www.last.fm/api">Last.fm AudioScrobbler</a>.</p>
 
-        <h2>My recent tracks</h2>
+        <h2>My <span id="nrRecentTracks">?</span> recent Scrobbled tracks (Total: <span id="nrTotalTracks">?</span>)</h2>
+        
+        <div id="pagination">
+            <label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" /> of <span id="totalNrPages"></span></label>
+            <button id="getPageBtn">Get page</button>
+            <button id="getPagePrev">Previous</button>
+            <button id="getPageNext">Next</button>
+            <em id="loadingSpinner"></em>
+        </div>
+
         <ul id="recentTracks"><!-- placeholder for the track history --></ul>
 
-        <h4>Plans</h4>
+        <h2>Plans</h2>
         <ul>
             <li>Learn more about <a href="http://mootools.net/docs/core/Core/Core">MooTools</a>.</li>
-            <li>Pagination: add in multiple pages to browse through the history of tracks.</li>
+            <li><s>Pagination: add in multiple pages to browse through the history of tracks.</s></li>
             <li>Make it look nice.</li>
-            <li>Split up the files into CSS, JavaScript, HTML, etc</li>
+            <li><s>Split up the files into CSS, JavaScript, HTML, etc</s></li>
+            <li>Add features: cross-reference with <a href="http://www.deezer.com">Deezer</a>: add tracks to favourites playlist (Todo: Need to set up Deezer app for this.)</li>
         </ul>
 
-        <address>Updated: 2014-04-19 <a href="http://twitter.com/johanbove">@johanbove</a></address>
+        <address>Updated: 2014-04-20 by <a href="http://twitter.com/johanbove">@johanbove</a></address>
 
         <script src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
-
-        <script>
-
-            // @see http://mootools.net/docs/core/Utilities/DOMReady
-            window.addEvent('domready', function () {
-
-                //console.info("domReady!");
-
-                var username = 'joe-1',
-                    apiKey = '6944bec73e711c56ae9955c77d642c98',
-
-                // @see http://mootools.net/docs/core/Element/Element
-                    recentTracks = $('recentTracks'),
-
-                    addRecentTracks = function (tracks) {
-
-                        // @see http://mootools.net/docs/core/Types/Array
-                        tracks.each(function (track) {
-
-                            // @see http://mootools.net/docs/core/Element/Element
-                            var el = new Element('li.track'),
-                                a = new Element('a', {
-                                    href: track.url
-                                }).inject(el),
-                                date = new Element('span.date', { 'html': track.date['#text'] }).inject(a),
-                                artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(a),
-                                name = new Element('span.name', { 'html': track.name }).inject(a);
-
-                            console.info("Track", track);
-
-                            el.inject(recentTracks);
-
-                        });
-
-                    },
-
-                    getRecentTracks = function () {
-
-                        // @see http://mootools.net/docs/core/Request/Request.JSON
-                        var request = new Request.JSON({
-
-                            url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + username + '&api_key=' + apiKey + '&format=json',
-
-                            onRequest: function () {
-                                console.info('onRequest');
-                                recentTracks.set('text', 'Loading...');
-                            },
-
-                            onSuccess: function (jsonObj) {
-                                console.info('onSuccess');
-                                recentTracks.empty();
-                                addRecentTracks(jsonObj.recenttracks.track);
-                            },
-
-                            onComplete: function (jsonObj) {
-                                console.info('onComplete', jsonObj);
-                            },
-
-                            onError: function (text, error) {
-                                console.error(text, error);
-                            },
-
-                            onFailure: function (xhr) {
-                                console.error(xhr);
-                            }
-
-                            /* For testing
-                            , data: {
-                            json: JSON.encode(data)
-                            }
-                            */
-
-                        }).send();
-
-                    };
-
-                getRecentTracks();
-
-            });
-
-        </script>
+        <script src="getRecentTracks.js"></script>
 
     </body>
 </html>

@@ -3,7 +3,7 @@ window.addEvent('domready', function () {
 
     //console.info("domReady!");
 
-    var username = 'joe-1',
+    var username = 'joe-1',     // lastfm
         apiKey = '6944bec73e711c56ae9955c77d642c98',
         page = 1,
         lastPage = 1,
@@ -33,7 +33,18 @@ window.addEvent('domready', function () {
                     }).inject(el),
                     date = new Element('span.date', { 'html': track.date['#text'] }).inject(a),
                     artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(a),
-                    name = new Element('span.name', { 'html': track.name }).inject(a), album = new Element('span.album', { 'html': track.album['#text'] }).inject(a);
+                    name = new Element('span.name', { 'html': track.name }).inject(a), album = new Element('span.album', { 'html': track.album['#text'] }).inject(a),
+                    deezerSearchBtn = new Element('a', {
+                        href: '#',
+                        text: 'Deezer lookup',
+                        events: {
+                            click: function (e) {
+                                e.preventDefault();
+                                //deezerSearch('"' + track.artist['#text'] + '" "' + track.name + '"');
+                                deezerSearch(track.artist['#text'] + ' ' + track.name);
+                            }
+                        }
+                    }).inject(el);
 
                 console.info("Track", track);
 
@@ -74,6 +85,42 @@ window.addEvent('domready', function () {
 
                     nav.init(page);
 
+                },
+
+                onComplete: function (jsonObj) {
+                    console.info('onComplete', jsonObj);
+                },
+
+                onError: function (text, error) {
+                    console.error(text, error);
+                },
+
+                onFailure: function (xhr) {
+                    console.error(xhr);
+                }
+
+                /* For testing
+                , data: {
+                json: JSON.encode(data)
+                }
+                */
+
+            }).send();
+
+        },
+
+        getDeezerUser = function () {
+
+            var request = new Request.JSON({
+
+                url: 'http://api.deezer.com/user/' + userid + '&output=jsonp',
+
+                onRequest: function () {
+                    console.info('onRequest');
+                },
+
+                onSuccess: function (jsonObj) {
+                    console.info('onSuccess', jsonObj);
                 },
 
                 onComplete: function (jsonObj) {

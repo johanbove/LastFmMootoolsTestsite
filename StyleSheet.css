@@ -19,10 +19,11 @@ h1 {
 header, footer, section {
     background-color:  rgba(60,60,60, .75);
     color:  rgba(255,255,255,1);
-    padding:  1% 2%;
-    margin:  1%;
+    padding: 1% 5%;
+    margin: 2%;
     border-radius: 5px;
     text-shadow: rgba(0,0,0,1) 1px 1px 3px;
+    border:  1px outset rgba(255,255,255,.1);
 }
 
 footer {
@@ -64,9 +65,12 @@ li.track {
     margin:  0 10px 0 0;
 }
 
-/*.date:after {
-    content: ' :';
-} */           
+.date {
+    font-size: smaller;
+}
+.artist, .name {
+    font-weight:  bold;
+}     
 .artist:after {
     content: ' - ';
 }

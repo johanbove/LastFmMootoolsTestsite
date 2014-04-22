@@ -9,28 +9,45 @@
 
     </head>
     <body>
+       
+        <div class="wrapper">
+         
+            <header>
+                <h1>My Last.fm / Deezer MooTools Project</h1>
+            </header>
         
-        <h1>My Last.fm / Deezer MooTools Project</h1>
-        <p>Learning <a href="http://mootools.net/">MooTools</a>. All registered plays are tracked using the <a href="http://www.last.fm/api">Last.fm AudioScrobbler</a>. Most track plays are coming from <a href="http://www.deezer.com">Deezer</a></p>
+            <section>
+           
+                <p>Learning <a href="http://mootools.net/">MooTools</a>. All registered plays are tracked using the <a href="http://www.last.fm/api">Last.fm AudioScrobbler</a>. Most track plays are coming from <a href="http://www.deezer.com">Deezer</a>. Currently only working for <a href="http://last.fm/user/joe-1">my personal Last.fm account</a>. The list updates itself every three minutes.</p>
 
-        <h2>My <span id="nrRecentTracks">?</span> recent Scrobbled tracks (Total: <span id="nrTotalTracks">?</span>)</h2>
+            </section>
+
+            <section>
+
+                <h2>My <span id="nrRecentTracks">?</span> recent Scrobbled tracks (Total: <span id="nrTotalTracks">?</span>)</h2>
         
-        <div id="pagination">
-            <label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" /> of <span id="totalNrPages"></span></label>
-            <button id="getPageBtn">Get page</button>
-            <button id="getPagePrev">Previous</button>
-            <button id="getPageNext">Next</button>
-            <em id="loadingSpinner"></em>
+                <nav id="pagination">
+                    <label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" /> of <span id="totalNrPages"></span></label>
+                    <button id="getPageBtn">Get page</button>
+                    <button id="getPagePrev">Previous</button>
+                    <button id="getPageNext">Next</button>
+                    <em id="loadingSpinner"></em>
+                </nav>
+
+                <ul id="recentTracks"><!-- placeholder for the track history --></ul>
+
+                <div id="dz-root"><!-- Deezer --></div>
+
+            </section>
+       
+            <footer>
+                <address>Updated: 2014-04-22 by <a href="http://twitter.com/johanbove">@johanbove</a></address>
+            </footer>
+
         </div>
 
-        <ul id="recentTracks"><!-- placeholder for the track history --></ul>
-
-        <div id="dz-root"></div>        
-        
-        <address>Updated: 2014-04-22 by <a href="http://twitter.com/johanbove">@johanbove</a></address>
-
         <script src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
-        <script src="http://cdn-files.deezer.com/js/min/dz.js"></script>
+        <script src="//cdn-files.deezer.com/js/min/dz.js"></script>
 
         <script src="deezer.js"></script>
         <script src="getRecentTracks.js"></script>

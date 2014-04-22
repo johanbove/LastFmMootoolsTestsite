@@ -27,11 +27,13 @@ window.addEvent('domready', function () {
             tracks.each(function (track) {
 
                 // @see http://mootools.net/docs/core/Element/Element
-                var el = new Element('li.track'),
-                    date = new Element('span.date', { 'html': track.date['#text'] }).inject(el),
+                var el = new Element('li.track'),                    
                     artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(el),
                     name = new Element('span.name', { 'html': track.name }).inject(el),
                     album = new Element('span.album', { 'html': track.album['#text'] }).inject(el),
+                    btns = new Element('div.btns').inject(el),
+                    meta = new Element('div.meta').inject(el),
+                    date = new Element('span.date', { 'html': track.date['#text'] }).inject(meta),
                     deezerSearchBtn = new Element('a', {
                         href: '#',
                         text: 'Deezer',
@@ -43,17 +45,17 @@ window.addEvent('domready', function () {
                             }
                         },
                         'class': 'extBtn deezerBtn'
-                    }).inject(el),
+                    }).inject(btns),
                     lastFmBtn = new Element('a', {
                         href: track.url,
                         text: 'Last.fm',
                         'class': 'extBtn lastfmBtn'
-                    }).inject(el),
+                    }).inject(btns),
                     googleBtn = new Element('a', {
                         href: 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(track.artist['#text']),
                         text: 'Google',
                         'class': 'extBtn googleBtn'
-                    }).inject(el);
+                    }).inject(btns);
 
                 console.info("Track", track);
 

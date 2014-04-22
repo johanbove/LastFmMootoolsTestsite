@@ -2,6 +2,52 @@
 
 body {
     font-family:  'Ubuntu Mono', consolas, monospace;
+    background: rgba(34,34,34,1) url('../img/thewebbackground.jpg') fixed;
+}
+
+.wrapper {
+    min-width: 320px;
+    width: 80%;
+    margin: auto auto;
+}
+
+h1 {
+    margin:  auto auto;
+    text-align: center;
+}
+
+header, footer, section {
+    background-color:  rgba(60,60,60, .75);
+    color:  rgba(255,255,255,1);
+    padding:  1% 2%;
+    margin:  1%;
+    border-radius:  10px;
+}
+
+footer {
+    text-align: center;
+}
+
+a:link {
+    color: rgba(255,255,255,.85);
+    -webkit-transition:  all .5s;
+    transition:  all .5s;
+}
+
+a:visited {
+    color: rgba(200,200,200,.65); 
+}
+
+a:hover, a:focus {
+    color: rgba(255,255,255,1); 
+}
+
+ul {
+    list-style-type: square;
+}
+
+li.track {
+    margin-top:  10px;
 }
 
 .date,
@@ -12,9 +58,14 @@ body {
     display:  inline-block;
     margin:  0 5px 0 0;
 }
-.date:after {
+
+.extBtn {
+    margin:  0 10px 0 0;
+}
+
+/*.date:after {
     content: ' :';
-}            
+} */           
 .artist:after {
     content: ' - ';
 }

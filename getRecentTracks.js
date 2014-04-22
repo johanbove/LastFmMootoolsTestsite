@@ -28,22 +28,31 @@ window.addEvent('domready', function () {
 
                 // @see http://mootools.net/docs/core/Element/Element
                 var el = new Element('li.track'),
-                    a = new Element('a', {
-                        href: track.url
-                    }).inject(el),
-                    date = new Element('span.date', { 'html': track.date['#text'] }).inject(a),
-                    artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(a),
-                    name = new Element('span.name', { 'html': track.name }).inject(a), album = new Element('span.album', { 'html': track.album['#text'] }).inject(a),
+                    date = new Element('span.date', { 'html': track.date['#text'] }).inject(el),
+                    artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(el),
+                    name = new Element('span.name', { 'html': track.name }).inject(el),
+                    album = new Element('span.album', { 'html': track.album['#text'] }).inject(el),
                     deezerSearchBtn = new Element('a', {
                         href: '#',
-                        text: 'Deezer lookup',
+                        text: 'Deezer',
                         events: {
                             click: function (e) {
                                 e.preventDefault();
                                 //deezerSearch('"' + track.artist['#text'] + '" "' + track.name + '"');
                                 deezerSearch(track.artist['#text'] + ' ' + track.name);
                             }
-                        }
+                        },
+                        'class': 'extBtn deezerBtn'
+                    }).inject(el),
+                    lastFmBtn = new Element('a', {
+                        href: track.url,
+                        text: 'Last.fm',
+                        'class': 'extBtn lastfmBtn'
+                    }).inject(el),
+                    googleBtn = new Element('a', {
+                        href: 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(track.artist['#text']),
+                        text: 'Google',
+                        'class': 'extBtn googleBtn'
                     }).inject(el);
 
                 console.info("Track", track);
@@ -209,5 +218,7 @@ window.addEvent('domready', function () {
     getPageNext.addEvent('click', nav.getNextPage);
 
     getRecentTracks();
+
+    var getTracksInterval = setInterval(getRecentTracks, 1000 * 60 * 3);
 
 });

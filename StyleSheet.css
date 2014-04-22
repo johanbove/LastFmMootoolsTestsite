@@ -1,11 +1,14 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic,700italic);
+
 body {
-    font-family:  consolas, monospace;
+    font-family:  'Ubuntu Mono', consolas, monospace;
 }
 
 .date,
 .artist,
 .name,
-.album {
+.album,
+.extBtn {
     display:  inline-block;
     margin:  0 5px 0 0;
 }

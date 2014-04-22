@@ -25,7 +25,7 @@ var deezerSearch = function (q) {
 
         if (total === undefined || total === 0) {
 
-            if(confirm('Sorry! Nothing found on Deezer for:\n' + q + '\n\nSearch again on Deezer?')) {
+            if(confirm('Sorry! Nothing found on Deezer for:\n' + q + '\n\nTry again?')) {
                 window.open('http://www.deezer.com/search/' + q.replace(/"/g, ""));
             };
 

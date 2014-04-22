@@ -2,7 +2,7 @@
 
 body {
     font-family:  'Ubuntu Mono', consolas, monospace;
-    background: rgba(34,34,34,1) url('../img/thewebbackground.jpg') fixed;
+    background: rgba(34,34,34,1) url('../img/dark_wood.png') fixed;
 }
 
 .wrapper {
@@ -21,7 +21,8 @@ header, footer, section {
     color:  rgba(255,255,255,1);
     padding:  1% 2%;
     margin:  1%;
-    border-radius:  10px;
+    border-radius: 5px;
+    text-shadow: rgba(0,0,0,1) 1px 1px 3px;
 }
 
 footer {

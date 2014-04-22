@@ -5,7 +5,7 @@ Intro
 -----
 Just a test project to learn about [Mootools Core](http://mootools.net/docs/core).
 Using the [Last.fm API user.getRecentTracks](http://www.last.fm/api/show/user.getRecentTracks).
-Also using the cool [Deezer API](http://developers.deezer.com/api/)
+Also using the cool [Deezer API](http://developers.deezer.com/api/).
 
 Plans
 -----

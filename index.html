@@ -24,10 +24,10 @@
 
             <section>
 
-                <h2>My <span id="nrRecentTracks">?</span> recent Scrobbled tracks (Total: <span id="nrTotalTracks">?</span>)</h2>
+                <h2><span id="userId">My</span> <span id="nrRecentTracks">?</span> recent Scrobbled tracks (Total: <span id="nrTotalTracks">?</span>)</h2>
         
                 <nav id="pagination">
-                    <label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" /> of <span id="totalNrPages"></span></label>
+                    <label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" min="1" /> of <span id="totalNrPages"></span></label>
                     <button id="getPageBtn">Get page</button>
                     <button id="getPagePrev">Previous</button>
                     <button id="getPageNext">Next</button>

@@ -11,24 +11,34 @@ window.addEvent('domready', function () {
         perPage = 10,
 
     // @see http://mootools.net/docs/core/Element/Element
-        loadingSpinner = $('loadingSpinner'),
-        recentTracks = $('recentTracks'),
-        pageNr = $('pageNr'),
-        getPageBtn = $('getPageBtn'),
-        getPagePrev = $('getPagePrev'),
-        getPageNext = $('getPageNext'),
-        totalNrPages = $('totalNrPages'),
-        nrRecentTracks = $('nrRecentTracks'),
-        nrTotalTracks = $('nrTotalTracks'),
+        loadingSpinnerEl = $('loadingSpinner'),
+        recentTracksEl = $('recentTracks'),
+        pageNrEl = $('pageNr'),
+        getPageBtnEl = $('getPageBtn'),
+        getPagePrevEl = $('getPagePrev'),
+        getPageNextEl = $('getPageNext'),
+        totalNrPagesEl = $('totalNrPages'),
+        nrrecentTracksEl = $('nrRecentTracks'),
+        nrTotalTracksEl = $('nrTotalTracks'),
+        userIdEl = $('userId'),
+
 
         addRecentTracks = function (tracks) {
 
-            var el, img, artist, name, album, btns, meta, date, deezerSearchBtn, lastFmBtn, googleBtn,
-                missingImg = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb' }),
+            var artist, title, album,
+                el, imgEl, artistEl, nameEl, albumEl, btnsEl, metaEl, dateEl, deezerSearchBtnEl, lastFmBtnEl, googleBtnEl,
+                missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb' }),
+                missingImgElClone,
                 timestamp, timestampFromNow, timestampCalendar;
 
             // @see http://mootools.net/docs/core/Types/Array
             tracks.each(function (track, index) {
+
+                artist = track.artist.name;
+                title = track.name;
+                album = track.album['#text'];
+
+                missingImgElClone = missingImgEl.clone();
 
                 // @see http://mootools.net/docs/core/Element/Element
                 el = new Element('li.track', {
@@ -50,8 +60,8 @@ window.addEvent('domready', function () {
 
                 // Gathering track elements
 
-                if (track.image && track.image.length && track.image[1] && track.image[1]['#text'].length) {
-                    img = new Element('img.thumb', {
+                if (track.image && track.image.length > 1 && track.image[1] && track.image[1]['#text'].length > 1) {
+                    imgEl = new Element('img.thumb', {
                         'src': track.image[1]['#text'],
                         'alt': track.image[1].size,
                         'events': {
@@ -61,51 +71,51 @@ window.addEvent('domready', function () {
                         }
                     }).inject(el);
                 } else {
-                    img = missingImg.inject(el);
+                    // @see: http://mootools.net/docs/core/Element/Element#Element:adopt
+                    imgEl = el.adopt(missingImgElClone);
                 }
 
-                meta = new Element('div.meta').inject(el);
-                btns = new Element('div.btns').inject(el);
+                metaEl = new Element('div.meta').inject(el);
+                btnsEl = new Element('div.btns').inject(el);
 
-                artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(meta);
-                name = new Element('span.name', { 'html': track.name }).inject(meta);
-                album = new Element('span.album', { 'html': track.album['#text'] }).inject(meta);
+                artistEl = new Element('span.artist', { 'html': artist }).inject(metaEl);
+                nameEl = new Element('span.name', { 'html': title }).inject(metaEl);
+                albumEl = new Element('span.album', { 'html': album }).inject(metaEl);
 
                 timestamp = moment.unix(track.date.uts);
                 timestampFromNow = timestamp.fromNow();
                 timestampCalendar = timestamp.calendar();
 
-                date = new Element('span.date', { 'html': '~ ' + timestampCalendar + ' or ' + timestampFromNow }).inject(meta);
+                dateEl = new Element('span.date', { 'html': '~ ' + timestampCalendar + ' or ' + timestampFromNow }).inject(metaEl);
 
                 // Buttons
-                deezerSearchBtn = new Element('a', {
+                deezerSearchBtnEl = new Element('a', {
                     href: '#',
                     text: 'Deezer',
                     events: {
                         click: function (e) {
                             e.preventDefault();
-                            //deezerSearch('"' + track.artist['#text'] + '" "' + track.name + '"');
-                            deezerSearch(track.artist['#text'] + ' ' + track.name);
+                            deezerSearch(artist + ' ' + title);
                         }
                     },
                     'class': 'extBtn deezerBtn'
-                }).inject(btns);
+                }).inject(btnsEl);
 
-                lastFmBtn = new Element('a', {
+                lastFmBtnEl = new Element('a', {
                     href: track.url,
                     text: 'Last.fm',
                     'class': 'extBtn lastfmBtn'
-                }).inject(btns);
+                }).inject(btnsEl);
 
-                googleBtn = new Element('a', {
-                    href: 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(track.artist['#text']),
+                googleBtnEl = new Element('a', {
+                    href: 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(artist),
                     text: 'Google',
                     'class': 'extBtn googleBtn'
-                }).inject(btns);
+                }).inject(btnsEl);
 
                 console.info("Track", track);
 
-                el.inject(recentTracks);
+                el.inject(recentTracksEl);
 
             });
 
@@ -117,11 +127,11 @@ window.addEvent('domready', function () {
             // @see http://mootools.net/docs/core/Request/Request
             var request = new Request.JSON({
 
-                url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + username + '&api_key=' + apiKey + '&format=json&page=' + page,
+                url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + username + '&api_key=' + apiKey + '&format=json&page=' + page + '&extended=1',
 
                 onRequest: function () {
                     console.info('onRequest');
-                    loadingSpinner.set('text', 'Loading...');
+                    loadingSpinnerEl.set('text', 'Loading...');
                 },
 
                 onSuccess: function (jsonObj) {
@@ -131,12 +141,13 @@ window.addEvent('domready', function () {
                     lastPage = jsonObj.recenttracks['@attr'].totalPages;
                     perPage = jsonObj.recenttracks['@attr'].perPage;
 
-                    totalNrPages.set('text', lastPage);
-                    nrTotalTracks.set('text', totalTracks);
-                    nrRecentTracks.set('text', perPage);
+                    totalNrPagesEl.set('text', lastPage);
+                    nrTotalTracksEl.set('text', totalTracks);
+                    nrrecentTracksEl.set('text', perPage);
+                    userIdEl.set('text', jsonObj.recenttracks['@attr'].user + "'s");
 
-                    loadingSpinner.empty();
-                    recentTracks.empty();
+                    loadingSpinnerEl.empty();
+                    recentTracksEl.empty();
 
                     addRecentTracks(jsonObj.recenttracks.track);
 
@@ -214,9 +225,9 @@ window.addEvent('domready', function () {
                 var atStart = (page === 1) ? true : false;
                 if (atStart) {
                     page = 1;
-                    getPagePrev.disabled = true;
+                    getPagePrevEl.disabled = true;
                 } else {
-                    getPagePrev.disabled = false;
+                    getPagePrevEl.disabled = false;
                 }
                 return page;
             },
@@ -225,16 +236,16 @@ window.addEvent('domready', function () {
                 var atEnd = (page === parseInt(lastPage, 10)) ? true : false;
                 if (atEnd) {
                     page = parseInt(lastPage, 10);
-                    getPageNext.disabled = true;
+                    getPageNextEl.disabled = true;
                 } else {
-                    getPageNext.disabled = false;
+                    getPageNextEl.disabled = false;
                 }
                 return page;
             },
 
             getPage: function (e) {
                 e.preventDefault();
-                page = pageNr.value;
+                page = pageNrEl.value;
                 page = nav.init(page);
                 console.info('Clicked getPageBtn', page);
                 getRecentTracks();
@@ -242,28 +253,28 @@ window.addEvent('domready', function () {
 
             getPrevPage: function (e) {
                 e.preventDefault();
-                page = parseInt(pageNr.value, 10) - 1;
+                page = parseInt(pageNrEl.value, 10) - 1;
                 page = nav.init(page);
-                pageNr.value = page;
+                pageNrEl.value = page;
                 console.info('getPagePrev', page);
                 getRecentTracks();
             },
 
             getNextPage: function (e) {
                 e.preventDefault();
-                page = parseInt(pageNr.value, 10) + 1;
+                page = parseInt(pageNrEl.value, 10) + 1;
                 page = nav.init(page);
-                pageNr.value = page;
+                pageNrEl.value = page;
                 console.info('getPageNext', page);
                 getRecentTracks();
             }
 
         };
 
-    pageNr.addEvent('blur', nav.getPage);
-    getPageBtn.addEvent('click', nav.getPage);
-    getPagePrev.addEvent('click', nav.getPrevPage);
-    getPageNext.addEvent('click', nav.getNextPage);
+    pageNrEl.addEvent('blur', nav.getPage);
+    getPageBtnEl.addEvent('click', nav.getPage);
+    getPagePrevEl.addEvent('click', nav.getPrevPage);
+    getPageNextEl.addEvent('click', nav.getNextPage);
 
     getRecentTracks();
 

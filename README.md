@@ -21,4 +21,8 @@ Plans
 - [x] Add Google search link for artist.
 - [x] Add a timer which reloads the tracks every 3 minutes or so.
 - [ ] Add moment.js to show the time since the playback.
-- [ ] Highlight currently playing track.
+- [ ] Fix the time-zone difference in the played timestamp.
+- [x] Highlight currently playing track.
+- [ ] Make the history list look better:
+  - [ ] Display the tracks in a more modern "cards" display. Or even better, allow the user to display the tracks in either list or cards layout.
+  - [x] Show the artist picture in the list.

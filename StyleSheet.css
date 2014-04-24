@@ -2,7 +2,7 @@
 
 body {
     font-family:  'Ubuntu Mono', consolas, monospace;
-    background: rgba(34,34,34,1) url('../img/dark_wood.png') fixed;
+    background: rgba(34,34,34,1) url('../img/dark_wood.png') scroll;
 }
 
 .wrapper {
@@ -46,10 +46,46 @@ a:hover, a:focus {
 
 ul {
     list-style-type: square;
+    margin:  0;
+    padding:  0;
+}
+
+#recentTracks {
+    margin:  20px 0;
 }
 
 li.track {
     margin-top:  10px;
+    clear:  both;
+    display:  block;
+    margin-top: 15px;
+    min-height: 64px;
+    padding:  0;
+}
+
+.thumb {
+    float:  left;
+    height:  64px;
+    width:  64px;
+    margin: 0 10px 0 0;
+    box-shadow:  rgba(0,0,0,1) 1px 1px 3px;
+    cursor:  pointer;
+    opacity:  .85;
+    -webkit-transition:  all .5s;
+    transition:  all .5s;
+    -webkit-filter: grayscale(45%);
+    filter: grayscale(45%);
+}
+
+li.track.selected .thumb, li.track:hover .thumb, li.track:focus .thumb, .thumb:hover, .thumb:focus {
+    opacity:  1;
+    -webkit-filter: grayscale(0);
+    filter: grayscale(0);
+}
+
+li.track.first .thumb {
+    -webkit-filter: grayscale(0);
+    filter: grayscale(0);
 }
 
 .date,

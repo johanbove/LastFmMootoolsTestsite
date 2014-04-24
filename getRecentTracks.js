@@ -23,39 +23,79 @@ window.addEvent('domready', function () {
 
         addRecentTracks = function (tracks) {
 
+            var el, img, artist, name, album, btns, meta, date, deezerSearchBtn, lastFmBtn, googleBtn,
+                missingImg = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb' });
+
             // @see http://mootools.net/docs/core/Types/Array
-            tracks.each(function (track) {
+            tracks.each(function (track, index) {
 
                 // @see http://mootools.net/docs/core/Element/Element
-                var el = new Element('li.track'),                    
-                    artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(el),
-                    name = new Element('span.name', { 'html': track.name }).inject(el),
-                    album = new Element('span.album', { 'html': track.album['#text'] }).inject(el),
-                    btns = new Element('div.btns').inject(el),
-                    meta = new Element('div.meta').inject(el),
-                    date = new Element('span.date', { 'html': track.date['#text'] }).inject(meta),
-                    deezerSearchBtn = new Element('a', {
-                        href: '#',
-                        text: 'Deezer',
-                        events: {
-                            click: function (e) {
-                                e.preventDefault();
-                                //deezerSearch('"' + track.artist['#text'] + '" "' + track.name + '"');
-                                deezerSearch(track.artist['#text'] + ' ' + track.name);
+                el = new Element('li.track', {
+                    'events': {
+                        'click': function (e) {
+                            // unselect previously selected
+                            $$('li.selected').each(function (el, index) {
+                                el.removeClass('selected');
+                            });
+                            // select new element
+                            this.addClass('selected');
+                        }
+                    }
+                });
+
+                if (index === 0) {
+                    el.addClass('first');
+                }
+
+                // Gathering track elements
+
+                if (track.image && track.image.length && track.image[1] && track.image[1]['#text'].length) {
+                    img = new Element('img.thumb', {
+                        'src': track.image[1]['#text'],
+                        'alt': track.image[1].size,
+                        'events': {
+                            'click': function (e) {
+                                location.href = track.url;
                             }
-                        },
-                        'class': 'extBtn deezerBtn'
-                    }).inject(btns),
-                    lastFmBtn = new Element('a', {
-                        href: track.url,
-                        text: 'Last.fm',
-                        'class': 'extBtn lastfmBtn'
-                    }).inject(btns),
-                    googleBtn = new Element('a', {
-                        href: 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(track.artist['#text']),
-                        text: 'Google',
-                        'class': 'extBtn googleBtn'
-                    }).inject(btns);
+                        }
+                    }).inject(el);
+                } else {
+                    img = missingImg.inject(el);
+                }
+
+                meta = new Element('div.meta').inject(el);
+                btns = new Element('div.btns').inject(el);
+                
+                artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(meta);
+                name = new Element('span.name', { 'html': track.name }).inject(meta);
+                album = new Element('span.album', { 'html': track.album['#text'] }).inject(meta);
+                date = new Element('span.date', { 'html': track.date['#text'] }).inject(meta);
+
+                // Buttons
+                deezerSearchBtn = new Element('a', {
+                    href: '#',
+                    text: 'Deezer',
+                    events: {
+                        click: function (e) {
+                            e.preventDefault();
+                            //deezerSearch('"' + track.artist['#text'] + '" "' + track.name + '"');
+                            deezerSearch(track.artist['#text'] + ' ' + track.name);
+                        }
+                    },
+                    'class': 'extBtn deezerBtn'
+                }).inject(btns);
+
+                lastFmBtn = new Element('a', {
+                    href: track.url,
+                    text: 'Last.fm',
+                    'class': 'extBtn lastfmBtn'
+                }).inject(btns);
+
+                googleBtn = new Element('a', {
+                    href: 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(track.artist['#text']),
+                    text: 'Google',
+                    'class': 'extBtn googleBtn'
+                }).inject(btns);
 
                 console.info("Track", track);
 

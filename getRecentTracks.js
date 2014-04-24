@@ -24,7 +24,8 @@ window.addEvent('domready', function () {
         addRecentTracks = function (tracks) {
 
             var el, img, artist, name, album, btns, meta, date, deezerSearchBtn, lastFmBtn, googleBtn,
-                missingImg = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb' });
+                missingImg = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb' }),
+                timestamp, timestampFromNow, timestampCalendar;
 
             // @see http://mootools.net/docs/core/Types/Array
             tracks.each(function (track, index) {
@@ -65,11 +66,16 @@ window.addEvent('domready', function () {
 
                 meta = new Element('div.meta').inject(el);
                 btns = new Element('div.btns').inject(el);
-                
+
                 artist = new Element('span.artist', { 'html': track.artist['#text'] }).inject(meta);
                 name = new Element('span.name', { 'html': track.name }).inject(meta);
                 album = new Element('span.album', { 'html': track.album['#text'] }).inject(meta);
-                date = new Element('span.date', { 'html': track.date['#text'] }).inject(meta);
+
+                timestamp = moment.unix(track.date.uts);
+                timestampFromNow = timestamp.fromNow();
+                timestampCalendar = timestamp.calendar();
+
+                date = new Element('span.date', { 'html': '~ ' + timestampCalendar + ' or ' + timestampFromNow }).inject(meta);
 
                 // Buttons
                 deezerSearchBtn = new Element('a', {

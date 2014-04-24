@@ -6,6 +6,8 @@ Intro
 Just a test project to learn about [Mootools Core](http://mootools.net/docs/core).
 Using the [Last.fm API user.getRecentTracks](http://www.last.fm/api/show/user.getRecentTracks).
 Also using the cool [Deezer API](http://developers.deezer.com/api/).
+Uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
+Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
 
 Plans
 -----
@@ -20,9 +22,12 @@ Plans
   - [ ] Add tracks to favourites playlist (requires Deezer authorization)
 - [x] Add Google search link for artist.
 - [x] Add a timer which reloads the tracks every 3 minutes or so.
-- [ ] Add moment.js to show the time since the playback.
-- [ ] Fix the time-zone difference in the played timestamp.
+- [x] Add moment.js to show the time since the playback.
+- [x] Fix the time-zone difference in the played timestamp.
 - [x] Highlight currently playing track.
 - [ ] Make the history list look better:
   - [ ] Display the tracks in a more modern "cards" display. Or even better, allow the user to display the tracks in either list or cards layout.
   - [x] Show the artist picture in the list.
+  - [ ] Fix layout to look better on small screens: less wrapping.
+- [ ] Link with Push Notifications: every time a new song is playing.
+- [ ] Every time a song is added, take a picture using the webcam and track location data of the browser where the app currently is opened. 

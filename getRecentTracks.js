@@ -89,24 +89,28 @@ window.addEvent('domready', function () {
                 dateEl = new Element('span.date', { 'html': '~ ' + timestampCalendar + ' or ' + timestampFromNow }).inject(metaEl);
 
                 // Buttons
+
+                // @TODO: Should I create these ones outside of the foreach and then clone and adopt?
                 deezerSearchBtnEl = new Element('a', {
                     href: '#',
                     text: 'Deezer',
                     events: {
                         click: function (e) {
                             e.preventDefault();
-                            deezerSearch(artist + ' ' + title);
+                            deezerSearch(track.artist.name + ' ' + track.name);
                         }
                     },
                     'class': 'extBtn deezerBtn'
                 }).inject(btnsEl);
 
+                // @TODO: Should I create these ones outside of the foreach and then clone and adopt?
                 lastFmBtnEl = new Element('a', {
                     href: track.url,
                     text: 'Last.fm',
                     'class': 'extBtn lastfmBtn'
                 }).inject(btnsEl);
 
+                // @TODO: Should I create these ones outside of the foreach and then clone and adopt?
                 googleBtnEl = new Element('a', {
                     href: 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(artist),
                     text: 'Google',

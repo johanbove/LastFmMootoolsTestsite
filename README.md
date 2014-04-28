@@ -28,6 +28,7 @@ Plans
 - [ ] Make the history list look better:
   - [ ] Display the tracks in a more modern "cards" display. Or even better, allow the user to display the tracks in either list or cards layout.
   - [x] Show the artist picture in the list.
-  - [ ] Fix layout to look better on small screens: less wrapping.
+  - [ ] Fix layout to look better on small screens: less text wrapping.
 - [ ] Link with Push Notifications: every time a new song is playing.
-- [ ] Every time a song is added, take a picture using the webcam and track location data of the browser where the app currently is opened. 
+- [ ] Every time a song is added, take a picture using the webcam and track location data of the browser where the app currently is opened.
+- [ ] Allow to enter any last.fm user id to check what other people are listening to.

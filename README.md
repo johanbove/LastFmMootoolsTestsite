@@ -9,6 +9,10 @@ Also using the cool [Deezer API](http://developers.deezer.com/api/).
 Uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
 Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
 
+Demo
+----
+[Demo site](http://deezertest.johanbove.info/)
+
 Plans
 -----
 - [ ] Learn more about [MooTools](http://mootools.net/docs/core/Core/Core).

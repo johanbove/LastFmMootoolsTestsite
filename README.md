@@ -37,4 +37,5 @@ Plans
 - [ ] Link with Push Notifications: every time a new song is playing.
 - [ ] Every time a song is added, take a picture using the webcam and track location data of the browser where the app currently is opened.
 - [ ] Allow to enter any last.fm user id to check what other people are listening to.
-- [x] Optimize page loading by keeping all files local and concatenate the JavaScript, using Uglify2
+- [x] Optimize page loading by keeping all files local and concatenate the JavaScript, using Uglify2.
+- [ ] Move the Deezer JavaScript alert to a custom dialog element inside the page since it's not working in IE with high security settings active.

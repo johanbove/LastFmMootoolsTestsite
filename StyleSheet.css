@@ -42,7 +42,7 @@ h1 {
 }
 
 header, footer, section {
-    background-color:  rgba(60,60,60, .75);
+    background-color:  rgba(25,25,25, .75);
     color:  rgba(255,255,255,1);
     padding: 1% 5%;
     margin: 2%;

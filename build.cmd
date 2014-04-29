@@ -1,0 +1,2 @@
+cd c:\Users\Johan\workspace\LastFmMootoolsTestsite\
+uglifyjs .\moment.min.js .\mootools-yui-compressed.js .\dz.js .\deezer.js .\getRecentTracks.js --output built-v0.1.min.js --source-map built-v0.1-source.js --comments

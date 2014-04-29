@@ -72,9 +72,9 @@ window.dzAsyncInit = function () {
 
 };
 
-(function () {
-    var e = document.createElement('script');
-    e.src = 'http://cdn-files.deezer.com/js/min/dz.js';
-    e.async = true;
-    document.getElementById('dz-root').appendChild(e);
-} ());
+//(function () {
+    //var e = document.createElement('script');
+    //e.src = 'http://cdn-files.deezer.com/js/min/dz.js';
+    //e.async = true;
+    //document.getElementById('dz-root').appendChild(e);
+//} ());

@@ -8,6 +8,7 @@ Using the [Last.fm API user.getRecentTracks](http://www.last.fm/api/show/user.ge
 Also using the cool [Deezer API](http://developers.deezer.com/api/).
 Uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
 Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
+JavaScript concatenation done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
 
 Demo
 ----
@@ -36,3 +37,4 @@ Plans
 - [ ] Link with Push Notifications: every time a new song is playing.
 - [ ] Every time a song is added, take a picture using the webcam and track location data of the browser where the app currently is opened.
 - [ ] Allow to enter any last.fm user id to check what other people are listening to.
+- [x] Optimize page loading by keeping all files local and concatenate the JavaScript, using Uglify2

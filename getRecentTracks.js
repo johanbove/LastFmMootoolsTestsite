@@ -27,7 +27,7 @@ window.addEvent('domready', function () {
 
             var artist, title, album,
                 el, imgEl, artistEl, nameEl, albumEl, btnsEl, metaEl, dateEl, deezerSearchBtnEl, lastFmBtnEl, googleBtnEl,
-                missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb' }),
+                missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb', 'width': 64, 'height': 64 }),
                 missingImgElClone,
                 timestamp, timestampFromNow, timestampCalendar;
 
@@ -64,6 +64,7 @@ window.addEvent('domready', function () {
                     imgEl = new Element('img.thumb', {
                         'src': track.image[1]['#text'],
                         'alt': track.image[1].size,
+                        'width': 64, 'height': 64,
                         'events': {
                             'click': function (e) {
                                 location.href = track.url;

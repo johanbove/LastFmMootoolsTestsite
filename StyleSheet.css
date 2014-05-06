@@ -28,6 +28,7 @@
 body {
     font-family:  'Ubuntu Mono', consolas, monospace;
     background: rgba(34,34,34,1) url('../img/dark_wood.png') scroll;
+    font-size:  medium;
 }
 
 .wrapper {

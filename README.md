@@ -33,9 +33,13 @@ Plans
 - [ ] Make the history list look better:
   - [ ] Display the tracks in a more modern "cards" display. Or even better, allow the user to display the tracks in either list or cards layout.
   - [x] Show the artist picture in the list.
-  - [ ] Fix layout to look better on small screens: less text wrapping.
+  - [ ] Fix layout to look better on small screens: less text wrapping and general mobile viewport optimization.
 - [ ] Link with Push Notifications: every time a new song is playing.
 - [ ] Every time a song is added, take a picture using the webcam and track location data of the browser where the app currently is opened.
 - [ ] Allow to enter any last.fm user id to check what other people are listening to.
 - [x] Optimize page loading by keeping all files local and concatenate the JavaScript, using Uglify2.
 - [ ] Move the Deezer JavaScript alert to a custom dialog element inside the page since it's not working in IE with high security settings active.
+- [ ] Add browser history for pagination and URL hash tags for bookmarking (?)
+- [ ] Add currently playing status for the first song in the list if start time + duration is before now. Challenge: Last.fm is not returning the duration of the track in the original request.
+- [ ] Add SoundCloud artist lookup!
+- [ ] i18n fun!

@@ -10,6 +10,12 @@ Uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
 Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
 JavaScript concatenation done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
 
+Current version: 0.2
+
+Source
+------
+Check out the [source on Github](https://github.com/johanbove/LastFmMootoolsTestsite).
+
 Demo
 ----
 [Demo site](http://deezertest.johanbove.info/)

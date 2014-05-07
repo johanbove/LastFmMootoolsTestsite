@@ -37,7 +37,8 @@ Plans
 - [x] Fix the time-zone difference in the played timestamp.
 - [x] Highlight currently playing track.
 - [ ] Make the history list look better:
-  - [ ] Display the tracks in a more modern "cards" display. Or even better, allow the user to display the tracks in either list or cards layout.
+  - [x] Display the tracks in a more modern "cards" display.
+  - [ ] Or even better, allow the user to display the tracks in either list or cards layout.
   - [x] Show the artist picture in the list.
   - [ ] Fix layout to look better on small screens: less text wrapping and general mobile viewport optimization.
 - [ ] Link with Push Notifications: every time a new song is playing.

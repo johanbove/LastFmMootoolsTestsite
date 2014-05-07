@@ -116,7 +116,7 @@ var LastFm = new Class({
             albumEl = new Element('span.album', { 'html': album }).inject(metaEl);
 
             if (timestampCalendar.length && timestampFromNow.length) {
-                dateEl = new Element('span.date', { 'html': '~ ' + timestampCalendar + ' or ' + timestampFromNow }).inject(metaEl);
+                dateEl = new Element('span.date', { 'html': '<span class="tilde">~</span>' + timestampCalendar + ' or ' + timestampFromNow }).inject(metaEl);
             }
 
             // Buttons
@@ -175,8 +175,11 @@ var LastFm = new Class({
                 onSuccess: function (jsonObj) {
                     if (self.debug) console.info('onSuccess', jsonObj);
 
-                    if (typeof jsonObj.recenttracks['@attr'] === 'undefined') {
+                    if (jsonObj.recenttracks && typeof jsonObj.recenttracks['@attr'] === 'undefined') {
                         console.error('Error retrieving tracks!', jsonObj);
+                        setTimeout(function () {
+                            getRecentTracks();
+                        }, 2000);
                         return;
                     }
 
@@ -221,7 +224,7 @@ var LastFm = new Class({
 
             }).send();
 
-        },       
+        },
 
         nav = {
 
@@ -333,7 +336,7 @@ var LastFm = new Class({
 
     },
 
-     getDeezerUser: function (userid) {
+    getDeezerUser: function (userid) {
 
         var request = new Request.JSON({
 

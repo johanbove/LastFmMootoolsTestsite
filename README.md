@@ -28,9 +28,9 @@ Plans
 - [x] Split up the files into CSS, JavaScript, HTML, etc.            
 - Cross-reference with [Deezer](http://www.deezer.com):
   - [x] Set up a [Test Deezer app](http://developers.deezer.com/myapps/app/136181)
-  - [ ] Add number of times played to the track history (requires Deezer authorization)
+  - [ ] Add number of times played to the track history (requires Deezer authorization).
   - [x] Add scrobbled tracks back to Deezer track pages: look up track on Deezer using data from last.fm.
-  - [ ] Add tracks to favourites playlist (requires Deezer authorization)
+  - [ ] Add tracks to favourites playlist (requires Deezer authorization).
 - [x] Add Google search link for artist.
 - [x] Add a timer which reloads the tracks every 3 minutes or so.
 - [x] Add moment.js to show the time since the playback.
@@ -49,4 +49,5 @@ Plans
 - [ ] Add browser history for pagination and URL hash tags for bookmarking (?)
 - [ ] Add currently playing status for the first song in the list if start time + duration is before now. Challenge: Last.fm is not returning the duration of the track in the original request.
 - [ ] Add SoundCloud artist lookup!
-- [ ] i18n fun!
+- [ ] i18n fun: add NL, FR, etc.
+- [ ] Make it possible to toggle the long introduction out of the way.

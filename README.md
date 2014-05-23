@@ -1,5 +1,5 @@
-LastFmMootoolsTestsite
-======================
+LastFm Mootools Test App
+========================
 
 Intro
 -----

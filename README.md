@@ -23,6 +23,8 @@ Demo
 Plans
 -----
 - [ ] Learn more about [MooTools](http://mootools.net/docs/core/Core/Core).
+- [ ] Use a templating engine, like [used in sammyjs](http://sammyjs.org/docs/tutorials/json_store_1).
+- [ ] Create a Sammy application doing the same thing.
 - [x] Pagination: add in multiple pages to browse through the history of tracks.
 - [x] Make it look pretty.
 - [x] Split up the files into CSS, JavaScript, HTML, etc.            

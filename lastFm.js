@@ -52,9 +52,9 @@ var LastFm = new Class({
         generateTrackHTML = function (trackData, index) {
 
             var theTrack = new Track(trackData),
-                artist, title, album,
+                artist, title, album, thumb,
                 el, imgEl, artistEl, nameEl, albumEl, btnsEl, metaEl, dateEl, deezerSearchBtnEl, lastFmBtnEl, googleBtnEl,
-                missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb', 'width': 64, 'height': 64 }),
+                missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb', 'width': 128, 'height': 128 }),
                 missingImgElClone,
                 timestamp = 0, timestampFromNow = '', timestampCalendar = '',
                 track = theTrack.data;
@@ -93,20 +93,32 @@ var LastFm = new Class({
 
             // Gathering track elements
 
-            if (track.image && track.image.length > 1 && track.image[1] && track.image[1]['#text'].length > 1) {
-                imgEl = new Element('img.thumb', {
-                    'src': track.image[1]['#text'],
-                    'alt': track.image[1].size,
-                    'width': 64, 'height': 64,
-                    'events': {
-                        'click': function (e) {
-                            location.href = track.url;
-                        }
-                    }
-                }).inject(el);
-            } else {
+            console.info("track", track);
+
+            if (!track.image || !track.image.length) {
+
                 // @see: http://mootools.net/docs/core/Element/Element#Element:adopt
                 imgEl = el.adopt(missingImgElClone);
+
+            } else {
+
+                thumb = track.image[3]; // extralarge
+
+                if (thumb && thumb['#text'].length > 1) {
+                    imgEl = new Element('img.thumb', {
+                        'src': thumb['#text'],
+                        'alt': thumb.size,
+                        'width': 128, 'height': 128,
+                        'events': {
+                            'click': function (e) {
+                                location.href = track.url;
+                            }
+                        }
+                    }).inject(el);
+                } else {
+                    imgEl = el.adopt(missingImgElClone);
+                }
+
             }
 
             metaEl = new Element('div.meta').inject(el);

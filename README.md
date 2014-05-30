@@ -18,7 +18,7 @@ Check out the [source on Github](https://github.com/johanbove/LastFmMootoolsTest
 
 Demo
 ----
-[Demo site](http://deezertest.johanbove.info/)
+[Demo site](http://scrobbled.johanbove.info/)
 
 Plans
 -----
@@ -60,3 +60,4 @@ Plans
 - [x] Implemented Mootools More plugin "Request.Queue" and change requests with the queue to prevent callback hell.
 - [x] Add song duration from Last.fm if available.
 - [ ] Add nice "loading spinner".
+- [x] Renamed the domain to "scrobbled".

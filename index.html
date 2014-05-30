@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>My Last.fm / Deezer Mootools Project</title>
+        <title>Scrobbled</title>
         <link rel="stylesheet" href="StyleSheet.css">
     </head>
     <body>
@@ -10,14 +10,14 @@
         <div class="wrapper">
          
             <header>
-                <h1>What have I been listening to lately?!</h1>
+                <h1>Scrobbled!</h1>
             </header>        
                        
             <noscript><section><p><strong>Please enable JavaScript!</strong></p></section></noscript>            
 
             <section>
 
-                <h2><span id="userId">My</span> <span id="nrRecentTracks">?</span> recent Scrobbled tracks (Total: <span id="nrTotalTracks">?</span>)</h2>
+                <h2><span id="userId">My</span> <span id="nrRecentTracks">?</span> recent scrobbles from a total of <span id="nrTotalTracks">?</span>.</h2>
         
                 <nav id="pagination">
                     <label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" min="1" /> of <span id="totalNrPages"></span></label>
@@ -35,11 +35,9 @@
             </section>
        
             <section>
-                <h3>About&hellip;</h3>
-                <p>This little app displays the latest track I have been listening to. I created it to get to know the <a href="http://mootools.net/">MooTools</a> JavaScript library, and also just for monkeying around with. I call it my <em>My Last.fm / Deezer MooTools Project</em>.</p>
-                <h3>Disclaaiimmr!</h3>
-                <p>Like so many things on the IntarWebs this is a work-in-progress and will probably never totally be finished.</p>
-                <h3>Le-je-ne-sais-quoi</h3>
+                <h3>About</h3>
+                <p>This little app displays the latest track I have been listening to. I created it to get to know the <a href="http://mootools.net/">MooTools</a> JavaScript library, and also just for monkeying around with. I call it my <em>My Last.fm / Deezer / MooTools Project</em>.</p>                
+                <h3>Credits</h3>
                 <p>All registered plays are tracked using the <a href="http://www.last.fm/api">Last.fm AudioScrobbler</a>. Most track plays are scrobbled from <a href="http://www.deezer.com">Deezer</a> and <a href="http://soundcloud.com">soundcloud.com</a>. Currently only working for <a href="http://last.fm/user/joe-1">my personal Last.fm account</a>. The list updates itself every three minutes. Uses <a href="http://momentjs.com/">momentjs</a> for date parsing. JavaScript concatenation done using <a href="https://github.com/mishoo/UglifyJS2">UglifyJS2</a>. Background image found on <a href="http://subtlepatterns.com/tag/dark/">subtlepatterns</a>.</p>
             </section>
 

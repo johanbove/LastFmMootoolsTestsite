@@ -9,9 +9,94 @@ function getContrastYIQ(hexcolor){
 }
 
 var Track = new Class({
-
     initialize: function (track) {
         this.data = track;
+    }
+});
+
+var Nav = new Class({
+
+    Implements: [Options],
+
+    options: {
+        'debug': true
+    },
+
+    initialize: function (options) {
+
+        var self = this;
+
+        this.setOptions(options);
+
+        this.lastFm = this.options.lastFm;
+        this.debug = this.options.debug;
+        this.page = 1;
+        this.lastPage = 1;
+
+        var pageNrEl = $('pageNr'),
+            getPageBtnEl = $('getPageBtn'),
+            getPagePrevEl = $('getPagePrev'),
+            getPageNextEl = $('getPageNext');
+
+        this.init = function (lastFm) {
+            self.lastFm = lastFm;
+            self.page = self.lastFm.page;
+            self.lastPage = self.lastFm.lastPage;
+            self.isAtStart();
+            self.isAtEnd();
+        };
+
+        this.isAtStart = function () {
+            var atStart = (self.page === 1) ? true : false;
+            if (atStart) {
+                self.page = 1;
+                getPagePrevEl.disabled = true;
+            } else {
+                getPagePrevEl.disabled = false;
+            }
+        };
+
+        this.isAtEnd = function () {
+            var atEnd = (self.page === parseInt(self.lastPage, 10)) ? true : false;
+            if (atEnd) {
+                self.page = parseInt(self.lastPage, 10);
+                getPageNextEl.disabled = true;
+            } else {
+                getPageNextEl.disabled = false;
+            }
+        };
+
+        this.getPage = function (e) {
+            e.preventDefault();
+            self.page = pageNrEl.value;
+            if (self.debug) console.info('Clicked getPageBtn', self.page);
+            self.lastFm.page = self.page;
+            self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+        };
+
+        this.getPrevPage = function (e) {
+            e.preventDefault();
+            self.page = parseInt(pageNrEl.value, 10) - 1;
+            pageNrEl.value = self.page;
+            if (self.debug) console.info('getPagePrev', self.page);
+            self.lastFm.page = self.page;
+            self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+        };
+
+        this.getNextPage = function (e) {
+            e.preventDefault();
+            self.page = parseInt(pageNrEl.value, 10) + 1;
+            pageNrEl.value = self.page;
+            if (self.debug) console.info('getPageNext', self.page);
+            self.lastFm.page = self.page;
+            self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+        };
+
+        pageNrEl.addEvent('blur', self.getPage);
+        getPageBtnEl.addEvent('click', self.getPage);
+        getPagePrevEl.addEvent('click', self.getPrevPage);
+        getPageNextEl.addEvent('click', self.getNextPage);
+
     }
 
 });
@@ -39,7 +124,13 @@ var LastFm = new Class({
         this.perPage = this.options.perPage;
         this.debug = this.options.debug;
 
+        // @see http://mootools.net/docs/core/Element/Element
         this.loadingSpinnerEl = $('loadingSpinner');
+        this.recentTracksEl = $('recentTracks');
+        this.nrrecentTracksEl = $('nrRecentTracks');
+        this.nrTotalTracksEl = $('nrTotalTracks');
+        this.totalNrPagesEl = $('totalNrPages');
+        this.userIdEl = $('userId');
 
         // Implements the More plugin Request.Queue
         // @see http://mootools.net/docs/more/Request/Request.Queue
@@ -60,30 +151,19 @@ var LastFm = new Class({
             },
             onEnd: function () {
                 if (self.debug) console.info("Generating track html...");
-                tracks.each(generateTrackHTML);
+                self.tracks.each(self.generateTrackHTML);
             }
         });
 
-        var page = 1,
-            lastPage = 1,
-            totalTracks = 0,
-            tracks = [],
-
-        // @see http://mootools.net/docs/core/Element/Element
-            recentTracksEl = $('recentTracks'),
-            pageNrEl = $('pageNr'),
-            getPageBtnEl = $('getPageBtn'),
-            getPagePrevEl = $('getPagePrev'),
-            getPageNextEl = $('getPageNext'),
-            totalNrPagesEl = $('totalNrPages'),
-            nrrecentTracksEl = $('nrRecentTracks'),
-            nrTotalTracksEl = $('nrTotalTracks'),
-            userIdEl = $('userId'),
+        this.page = 1;
+        this.lastPage = 1;
+        this.totalTracks = 0;
+        this.tracks = [];
 
         // Creates the HTML code used to display the scrobbled track.
         // @param {object} track
         // @param {integer} index
-        generateTrackHTML = function (trackData, index) {
+        this.generateTrackHTML = function (trackData, index) {
 
             var theTrack = new Track(trackData),
                 artist, title, album, thumb,
@@ -155,7 +235,7 @@ var LastFm = new Class({
                     $$('.background').set("style", "background-image:url(" + track.image[3]['#text'] + ")");
                     window.setTimeout(function () {
                         if (self.debug) console.info("starting getColorTag request", track.image[0]['#text']);
-                        self.requests.getColorTag.send('url=' + track.image[0]['#text']);
+                        //self.requests.getColorTag.send('url=' + track.image[0]['#text']);
                     }, 5000);
                 }
 
@@ -230,19 +310,19 @@ var LastFm = new Class({
 
             if (self.debug) console.info("Rendered Track", track);
 
-            el.inject(recentTracksEl);
+            el.inject(self.recentTracksEl);
 
-        },
+        };
 
-        parseColors = function (jsonObj) {
-          
-          var len = jsonObj.tags.length,
+        // Parses through the colors returns by getColorTag
+        this.parseColors = function (jsonObj) {
+
+            var len = jsonObj.tags.length,
             i = len,
             backgrColor = jsonObj.tags[0].label,
             textColor = jsonObj.tags[jsonObj.tags.length - 1].label,
             colors = [];
 
-                    
             while (i) {
                 i--;
                 colors.push({ 'yiq': getContrastYIQ(jsonObj.tags[i].color), 'hex': jsonObj.tags[i].color });
@@ -253,26 +333,27 @@ var LastFm = new Class({
             });
 
             backgrColor = colors[0].hex;
-            textColor = colors[colors.length - 1].hex;                    
+            textColor = colors[colors.length - 1].hex;
 
             $(document.body).set('style', 'background-color:' + backgrColor + ';color:' + textColor); $$("a").set('style', 'color:' + textColor);
-            
-        },
+
+        };
 
         // @param {array} tracks
-        addRecentTracks = function () {
+        this.addRecentTracks = function () {
 
             self.loadingSpinnerEl.empty();
-            recentTracksEl.empty();
+            
+            self.recentTracksEl.empty();
 
-            tracks.each(function (track, index) {
+            self.tracks.each(function (track, index) {
                 self.requests.getTrackInfo.send('mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
             });
-        },
+        };
 
         // Getting the list of recent tracks from Last.fm
         // @returns Request.JSON for queuing
-        getRecentTracks = function () {
+        this.getRecentTracks = function () {
 
             // @see http://mootools.net/docs/more/Request/Request.Queue
             // @see http://mootools.net/docs/core/Request/Request.JSON
@@ -292,30 +373,30 @@ var LastFm = new Class({
 
                     var attr = jsonObj.recenttracks['@attr'];
 
-                    totalTracks = attr.total;
-                    lastPage = attr.totalPages;
+                    self.totalTracks = attr.total;
+                    self.lastPage = attr.totalPages;
 
-                    totalNrPagesEl.set('text', lastPage);
-                    nrTotalTracksEl.set('text', totalTracks);
-                    nrrecentTracksEl.set('text', self.perPage);
+                    self.totalNrPagesEl.set('text', self.lastPage);
+                    self.nrTotalTracksEl.set('text', self.totalTracks);
+                    self.nrrecentTracksEl.set('text', self.perPage);
 
-                    userIdEl.set('text', attr.user + "'s");                    
+                    self.userIdEl.set('text', attr.user + "'s");
 
-                    tracks = jsonObj.recenttracks.track;
+                    self.tracks = jsonObj.recenttracks.track;
 
-                    addRecentTracks();
+                    self.addRecentTracks();
 
-                    nav.init(page);
+                    self.nav.init(self);
 
                 }
 
             });
 
-        },
+        };
 
         // @param {object} track
         // @param {function} callback
-        getTrackInfo = function () {
+        this.getTrackInfo = function () {
 
             // This a Request.Queue so it can be used in the getrecenttracks request
             return new Request.JSON({
@@ -333,9 +414,9 @@ var LastFm = new Class({
                     var info = jsonObj.track;
 
                     // find the track we just updated and add the meta data
-                    tracks.each(function (track, index) {
+                    self.tracks.each(function (track, index) {
                         if (track.mbid === info.mbid) {
-                            tracks[index].info = info;
+                            self.tracks[index].info = info;
                         }
                     });
 
@@ -343,17 +424,17 @@ var LastFm = new Class({
 
             });
 
-        },
+        };
 
         // Returns color codes for the album art
-        getColorTag = function () {
+        this.getColorTag = function () {
             return new Request.JSON({
                 url: 'https://apicloud-colortag.p.mashape.com/tag-url.json?palette=w3c&sort=weight',
                 headers: { 'X-Mashape-Authorization': 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA' },
                 onRequest: function (jsonObj) {
                     self.loadingSpinnerEl.set('text', 'Loading album art colors...');
                 },
-                onSuccess: parseColors,
+                onSuccess: self.parseColors,
                 onComplete: function (name, instance, text, xml) {
                     self.loadingSpinnerEl.empty();
                     //if (self.debug) console.info('onComplete queue: ' + name + ' response: ', text);
@@ -362,123 +443,47 @@ var LastFm = new Class({
                     console.error(text, error);
                 }
             });
-        },
-
-        // @TODO: should probably be it's own Class
-        nav = {
-
-            init: function (page) {
-                page = nav.isAtStart(page);
-                page = nav.isAtEnd(page);
-                return page;
-            },
-
-            isAtStart: function (page) {
-                var atStart = (page === 1) ? true : false;
-                if (atStart) {
-                    page = 1;
-                    getPagePrevEl.disabled = true;
-                } else {
-                    getPagePrevEl.disabled = false;
-                }
-                return page;
-            },
-
-            isAtEnd: function (page) {
-                var atEnd = (page === parseInt(lastPage, 10)) ? true : false;
-                if (atEnd) {
-                    page = parseInt(lastPage, 10);
-                    getPageNextEl.disabled = true;
-                } else {
-                    getPageNextEl.disabled = false;
-                }
-                return page;
-            },
-
-            getPage: function (e) {
-                e.preventDefault();
-                page = pageNrEl.value;
-                page = nav.init(page);
-                if (self.debug) console.info('Clicked getPageBtn', page);
-                self.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
-            },
-
-            getPrevPage: function (e) {
-                e.preventDefault();
-                page = parseInt(pageNrEl.value, 10) - 1;
-                page = nav.init(page);
-                pageNrEl.value = page;
-                if (self.debug) console.info('getPagePrev', page);
-                self.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
-            },
-
-            getNextPage: function (e) {
-                e.preventDefault();
-                page = parseInt(pageNrEl.value, 10) + 1;
-                page = nav.init(page);
-                pageNrEl.value = page;
-                if (self.debug) console.info('getPageNext', page);
-                self.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
-            }
-
         };
 
-        pageNrEl.addEvent('blur', nav.getPage);
-        getPageBtnEl.addEvent('click', nav.getPage);
-        getPagePrevEl.addEvent('click', nav.getPrevPage);
-        getPageNextEl.addEvent('click', nav.getNextPage);
+        this.getDuckDuckGoInfo = function () {
+            return new Request.JSON({
+                url: 'https://duckduckgo-duckduckgo-zero-click-info.p.mashape.com/?no_html=1&no_redirect=1&skip_disambig=1&format=json',
+                headers: { 'X-Mashape-Authorization': 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA' },
+                method: 'get',
+                onRequest: function (jsonObj) {
+                    self.loadingSpinnerEl.set('text', 'Searching through DuckDuckGo ...');
+                },
+                onSuccess: function (jsonObj) {
+                    console.info(jsonObj);
+                },
+                onComplete: function (name, instance, text, xml) {
+                    self.loadingSpinnerEl.empty();
+                    //if (self.debug) console.info('onComplete queue: ' + name + ' response: ', text);
+                },
+                onError: function (text, error) {
+                    console.error(text, error);
+                }
+            });
+        };
 
         // Collect all requests here
 
         this.requests = {
-            'getRecentTracks': getRecentTracks(),
-            'getTrackInfo': getTrackInfo(),
-            'getColorTag': getColorTag()
+            'getRecentTracks': self.getRecentTracks(),
+            'getTrackInfo': self.getTrackInfo(),
+            'getColorTag': self.getColorTag(),
+            'getDuckDuckGoInfo': self.getDuckDuckGoInfo()
         };
 
         this.myQueue.addRequest("getRecentTracks", this.requests.getRecentTracks);
         this.myQueue.addRequest("getTrackInfo", this.requests.getTrackInfo);
         //this.myQueue.addRequest("getColorTag", this.requests.getColorTag);
 
-        this.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
+        this.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
 
-        var getTracksInterval = setInterval(this.requests.getRecentTracks.send, 1000 * 60 * 3);
+        var getTracksInterval = setInterval(this.requests.getRecentTracks.send, 1000 * 60 * .5);
 
-    },
-
-    getDeezerUser: function (userid) {
-
-        var request = new Request.JSON({
-
-            url: 'http://api.deezer.com/user/' + encodeURIComponent(userid) + '&output=jsonp',
-
-            onRequest: function () {
-                if (self.debug) console.info('onRequest');
-            },
-
-            onSuccess: function (jsonObj) {
-                console.info('onSuccess', jsonObj);
-            },
-
-            onComplete: function (jsonObj) {
-                if (self.debug) console.info('onComplete', jsonObj);
-            },
-
-            onError: function (text, error) {
-                console.error(text, error);
-            },
-
-            onFailure: function (xhr) {
-                console.error(xhr);
-            }
-
-            /* For testing
-            , data: {
-            json: JSON.encode(data)
-            }
-            */
-
-        }).send();
+        self.nav = new Nav({ 'lastFm': self });
 
     }
 

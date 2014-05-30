@@ -62,3 +62,5 @@ Plans
 - [ ] Add nice "loading spinner".
 - [x] Renamed the domain to "scrobbled".
 - [x] Change the background image of the page using the genre / album cover of the current active song.
+- [ ] Link up with DuckDuckGo to get more information about the artists.
+- [x] Move nav to separate Class.

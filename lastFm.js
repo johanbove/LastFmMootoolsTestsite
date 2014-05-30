@@ -151,7 +151,11 @@ var LastFm = new Class({
             },
             onEnd: function () {
                 if (self.debug) console.info("Generating track html...");
-                self.tracks.each(self.generateTrackHTML);
+                if (self.tracks.length) {
+                    self.tracks.each(self.generateTrackHTML);
+                } else {
+                    self.generateTrackHTML(self.tracks, 0);
+                }
             }
         });
 
@@ -176,6 +180,11 @@ var LastFm = new Class({
                 genre = "",
                 genreEl = "",
                 tags = [];
+
+            if (!track.artist || !track.name) {
+                console.error(track);
+                return;
+            }
 
             // gather track data
             artist = track.artist.name;
@@ -236,7 +245,7 @@ var LastFm = new Class({
                     window.setTimeout(function () {
                         if (self.debug) console.info("starting getColorTag request", track.image[0]['#text']);
                         //self.requests.getColorTag.send('url=' + track.image[0]['#text']);
-                    }, 5000);
+                    }, 3000);
                 }
 
             }
@@ -342,13 +351,21 @@ var LastFm = new Class({
         // @param {array} tracks
         this.addRecentTracks = function () {
 
+            var track;
+
             self.loadingSpinnerEl.empty();
-            
+
             self.recentTracksEl.empty();
 
-            self.tracks.each(function (track, index) {
+            if (self.tracks.length) {
+                self.tracks.each(function (track, index) {
+                    self.requests.getTrackInfo.send('mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
+                });
+            } else {
+                track = self.tracks;
                 self.requests.getTrackInfo.send('mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
-            });
+            }
+
         };
 
         // Getting the list of recent tracks from Last.fm
@@ -413,12 +430,21 @@ var LastFm = new Class({
 
                     var info = jsonObj.track;
 
-                    // find the track we just updated and add the meta data
-                    self.tracks.each(function (track, index) {
-                        if (track.mbid === info.mbid) {
-                            self.tracks[index].info = info;
+                    if (self.tracks.length) {
+
+                        // find the track we just updated and add the meta data
+                        self.tracks.each(function (track, index) {
+                            if (track.mbid === info.mbid) {
+                                self.tracks[index].info = info;
+                            }
+                        });
+
+                    } else {
+                        if (self.tracks.mbid === info.mbid) {
+                            self.tracks.info = info;
                         }
-                    });
+                    }
+
 
                 }
 
@@ -491,5 +517,5 @@ var LastFm = new Class({
 
 // @see http://mootools.net/docs/core/Utilities/DOMReady
 window.addEvent('domready', function () {
-    lastFm = new LastFm({ 'perPage': 7, 'debug': true });
+    lastFm = new LastFm({ 'perPage': 3, 'debug': true });
 });

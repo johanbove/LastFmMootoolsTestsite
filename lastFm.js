@@ -14,7 +14,7 @@ var LastFm = new Class({
     options: {
         username: 'joe-1',
         apiKey: '6944bec73e711c56ae9955c77d642c98',
-        perPage: 10,
+        perPage: 6,
         debug: false
     },
 
@@ -102,7 +102,7 @@ var LastFm = new Class({
             missingImgElClone = missingImgEl.clone();
 
             // @see http://mootools.net/docs/core/Element/Element
-            el = new Element('li.track', {
+            el = new Element('div.track', {
                 'events': {
                     'click': function (e) {
                         // unselect previously selected
@@ -396,5 +396,5 @@ var LastFm = new Class({
 
 // @see http://mootools.net/docs/core/Utilities/DOMReady
 window.addEvent('domready', function () {
-    lastFm = new LastFm({ 'perPage': 15 });
+    lastFm = new LastFm({ 'perPage': 6 });
 });

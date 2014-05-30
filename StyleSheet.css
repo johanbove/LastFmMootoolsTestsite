@@ -26,53 +26,67 @@
 }
 
 body {
+    color:  rgba(255,255,255,1);
     font-family:  'Ubuntu Mono', consolas, monospace;
-    background: rgba(34,34,34,1) url('../img/dark_wood.png') scroll;
+    background: rgba(34,34,34,1);
+    -webkit-transition:  all 5s;
+    transition:  all 5s;
+    margin:  0;
+}
+
+.background {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-repeat:  no-repeat;
+    background-size: cover;
+    background-position: center center;
+    /*-webkit-filter: blur(3px);
+    filter: blur(3px);*/
+    opacity:  .5;
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+    -webkit-transform: skew(45, 0);
 }
 
 .wrapper {
     min-width: 320px;    
     margin: auto 1%;
+    position:  relative;
 }
 
-h1, h2, nav {
-    margin:  auto auto;
-    text-align: center;
+a  {
+    color: rgba(255,255,255,.85);
+    -webkit-transition:  color 5s;
+    transition:  all 5s;
 }
 
-nav {
-    margin:  5%;
-}
-
-header, footer, section {
-    color:  rgba(255,255,255,1);
-    padding: 1% 5%;
+header, footer, section, nav {    
     margin: 2%;
     text-shadow: rgba(0,0,0,1) 1px 1px 3px;
     clear: left;
 }
 
+
+header h2 {
+    margin-top:  2%;
+}
+
+/* Color changes based upon playing track tags */
+
 footer {
     text-align: center;
-}
-
-a:link {
-    color: rgba(255,255,255,.85);
-    -webkit-transition:  all .5s;
-    transition:  all .5s;
-}
-
-a:visited {
-    color: rgba(200,200,200,.65); 
-}
-
-a:hover, a:focus {
-    color: rgba(255,255,255,1); 
 }
 
 #loadingSpinner {
     text-align: center;
     font-style:  italic;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 #recentTracks {
@@ -124,7 +138,12 @@ a:hover, a:focus {
     filter: grayscale(0);
 }
 
+.track.first {
+    display:  block;
+}
+
 .track.first .thumb {
+    opacity:  1;
     -webkit-filter: grayscale(0);
     filter: grayscale(0);
 }
@@ -172,4 +191,12 @@ a:hover, a:focus {
 
 .numberInput {
     width: 45px;
+}
+
+@media (min-width: 600px) {
+
+    header h1, header h2 {
+        display:  inline-block;    
+    }
+
 }

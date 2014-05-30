@@ -1,3 +1,13 @@
+// @see http://24ways.org/2010/calculating-color-contrast/
+function getContrastYIQ(hexcolor){
+    hexcolor = hexcolor.replace('#', '');
+	var r = parseInt(hexcolor.substr(0,2),16),
+	    g = parseInt(hexcolor.substr(2,2),16),
+	    b = parseInt(hexcolor.substr(4,2),16),
+	    yiq = ((r*299)+(g*587)+(b*114))/1000;
+	return yiq; //(yiq >= 128) ? 'black' : 'white';
+}
+
 var Track = new Class({
 
     initialize: function (track) {
@@ -14,7 +24,7 @@ var LastFm = new Class({
     options: {
         username: 'joe-1',
         apiKey: '6944bec73e711c56ae9955c77d642c98',
-        perPage: 6,
+        perPage: 10,
         debug: false
     },
 
@@ -70,6 +80,7 @@ var LastFm = new Class({
             nrTotalTracksEl = $('nrTotalTracks'),
             userIdEl = $('userId'),
 
+        // Creates the HTML code used to display the scrobbled track.
         // @param {object} track
         // @param {integer} index
         generateTrackHTML = function (trackData, index) {
@@ -81,7 +92,10 @@ var LastFm = new Class({
                 missingImgElClone,
                 timestamp = 0, timestampFromNow = '', timestampCalendar = '',
                 track = theTrack.data,
-                durationEl = "";
+                durationEl = "",
+                genre = "",
+                genreEl = "",
+                tags = [];
 
             // gather track data
             artist = track.artist.name;
@@ -94,8 +108,23 @@ var LastFm = new Class({
                 timestampCalendar = timestamp.calendar();
             }
 
-            if (track.info && track.info.duration && +track.info.duration > 0) {
-                durationEl = '(' + moment.duration(+track.info.duration).format('m:ss') + ')';
+            if (track.info) {
+
+                if (track.info.duration && +track.info.duration > 0) {
+                    // Using plugin for moment.js to display duration in specific format
+                    durationEl = '(' + moment.duration(+track.info.duration).format('m:ss') + ')';
+                }
+
+                if (track.info.toptags && track.info.toptags.tag && track.info.toptags.tag.length > 1) {
+
+                    track.info.toptags.tag.each(function (tag, index) {
+                        tags.push(tag.name);
+                    });
+
+                    genre = tags.join("-");
+                    genreEl = tags.join(' / ');
+                }
+
             }
 
             // Creates a distinct missingImg for every track
@@ -116,7 +145,20 @@ var LastFm = new Class({
             });
 
             if (index === 0) {
+
                 el.addClass('first');
+
+                // first track sets style of the page using the genre tags
+                $(document.body).set("class", genre);
+
+                if (track.image && track.image.length) {
+                    $$('.background').set("style", "background-image:url(" + track.image[3]['#text'] + ")");
+                    window.setTimeout(function () {
+                        if (self.debug) console.info("starting getColorTag request", track.image[0]['#text']);
+                        self.requests.getColorTag.send('url=' + track.image[0]['#text']);
+                    }, 5000);
+                }
+
             }
 
             // Gathering track elements
@@ -192,8 +234,37 @@ var LastFm = new Class({
 
         },
 
+        parseColors = function (jsonObj) {
+          
+          var len = jsonObj.tags.length,
+            i = len,
+            backgrColor = jsonObj.tags[0].label,
+            textColor = jsonObj.tags[jsonObj.tags.length - 1].label,
+            colors = [];
+
+                    
+            while (i) {
+                i--;
+                colors.push({ 'yiq': getContrastYIQ(jsonObj.tags[i].color), 'hex': jsonObj.tags[i].color });
+            }
+
+            colors.sort(function (a, b) {
+                return a.yiq - b.yiq;
+            });
+
+            backgrColor = colors[0].hex;
+            textColor = colors[colors.length - 1].hex;                    
+
+            $(document.body).set('style', 'background-color:' + backgrColor + ';color:' + textColor); $$("a").set('style', 'color:' + textColor);
+            
+        },
+
         // @param {array} tracks
         addRecentTracks = function () {
+
+            self.loadingSpinnerEl.empty();
+            recentTracksEl.empty();
+
             tracks.each(function (track, index) {
                 self.requests.getTrackInfo.send('mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
             });
@@ -227,10 +298,8 @@ var LastFm = new Class({
                     totalNrPagesEl.set('text', lastPage);
                     nrTotalTracksEl.set('text', totalTracks);
                     nrrecentTracksEl.set('text', self.perPage);
-                    userIdEl.set('text', attr.user + "'s");
 
-                    self.loadingSpinnerEl.empty();
-                    recentTracksEl.empty();
+                    userIdEl.set('text', attr.user + "'s");                    
 
                     tracks = jsonObj.recenttracks.track;
 
@@ -274,6 +343,25 @@ var LastFm = new Class({
 
             });
 
+        },
+
+        // Returns color codes for the album art
+        getColorTag = function () {
+            return new Request.JSON({
+                url: 'https://apicloud-colortag.p.mashape.com/tag-url.json?palette=w3c&sort=weight',
+                headers: { 'X-Mashape-Authorization': 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA' },
+                onRequest: function (jsonObj) {
+                    self.loadingSpinnerEl.set('text', 'Loading album art colors...');
+                },
+                onSuccess: parseColors,
+                onComplete: function (name, instance, text, xml) {
+                    self.loadingSpinnerEl.empty();
+                    //if (self.debug) console.info('onComplete queue: ' + name + ' response: ', text);
+                },
+                onError: function (text, error) {
+                    console.error(text, error);
+                }
+            });
         },
 
         // @TODO: should probably be it's own Class
@@ -344,11 +432,13 @@ var LastFm = new Class({
 
         this.requests = {
             'getRecentTracks': getRecentTracks(),
-            'getTrackInfo': getTrackInfo()
+            'getTrackInfo': getTrackInfo(),
+            'getColorTag': getColorTag()
         };
 
         this.myQueue.addRequest("getRecentTracks", this.requests.getRecentTracks);
         this.myQueue.addRequest("getTrackInfo", this.requests.getTrackInfo);
+        //this.myQueue.addRequest("getColorTag", this.requests.getColorTag);
 
         this.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
 
@@ -396,5 +486,5 @@ var LastFm = new Class({
 
 // @see http://mootools.net/docs/core/Utilities/DOMReady
 window.addEvent('domready', function () {
-    lastFm = new LastFm({ 'perPage': 6 });
+    lastFm = new LastFm({ 'perPage': 7, 'debug': true });
 });

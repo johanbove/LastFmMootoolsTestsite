@@ -10,7 +10,7 @@ Uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
 Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
 JavaScript concatenation done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
 
-Current version: 0.3
+Current version: 0.31
 
 Source
 ------
@@ -61,3 +61,4 @@ Plans
 - [x] Add song duration from Last.fm if available.
 - [ ] Add nice "loading spinner".
 - [x] Renamed the domain to "scrobbled".
+- [x] Change the background image of the page using the genre / album cover of the current active song.

@@ -31,6 +31,29 @@ var LastFm = new Class({
 
         this.loadingSpinnerEl = $('loadingSpinner');
 
+        // Implements the More plugin Request.Queue
+        // @see http://mootools.net/docs/more/Request/Request.Queue
+        this.myQueue = new Request.Queue({
+            onRequest: function () {
+                if (self.debug) console.info('onRequest');
+                self.loadingSpinnerEl.set('text', 'Loading...');
+            },
+            onComplete: function (name, instance, text, xml) {
+                self.loadingSpinnerEl.empty();
+                //if (self.debug) console.info('onComplete queue: ' + name + ' response: ', text);
+            },
+            onError: function (text, error) {
+                console.error(text, error);
+            },
+            onFailure: function (xhr) {
+                console.error(xhr);
+            },
+            onEnd: function () {
+                if (self.debug) console.info("Generating track html...");
+                tracks.each(generateTrackHTML);
+            }
+        });
+
         var page = 1,
             lastPage = 1,
             totalTracks = 0,
@@ -57,7 +80,8 @@ var LastFm = new Class({
                 missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb', 'width': 128, 'height': 128 }),
                 missingImgElClone,
                 timestamp = 0, timestampFromNow = '', timestampCalendar = '',
-                track = theTrack.data;
+                track = theTrack.data,
+                durationEl = "";
 
             // gather track data
             artist = track.artist.name;
@@ -68,6 +92,10 @@ var LastFm = new Class({
                 timestamp = moment.unix(track.date.uts);
                 timestampFromNow = timestamp.fromNow();
                 timestampCalendar = timestamp.calendar();
+            }
+
+            if (track.info && track.info.duration && +track.info.duration > 0) {
+                durationEl = '(' + moment.duration(+track.info.duration).format('m:ss') + ')';
             }
 
             // Creates a distinct missingImg for every track
@@ -92,8 +120,6 @@ var LastFm = new Class({
             }
 
             // Gathering track elements
-
-            console.info("track", track);
 
             if (!track.image || !track.image.length) {
 
@@ -128,7 +154,7 @@ var LastFm = new Class({
             albumEl = new Element('span.album', { 'html': album }).inject(metaEl);
 
             if (timestampCalendar.length && timestampFromNow.length) {
-                dateEl = new Element('span.date', { 'html': '<span class="tilde">~</span>' + timestampCalendar + ' or ' + timestampFromNow }).inject(metaEl);
+                dateEl = new Element('span.date', { 'html': '<span class="tilde">~</span>' + timestampCalendar + '<br /> or ' + timestampFromNow + ' ' + durationEl }).inject(metaEl);
             }
 
             // Buttons
@@ -160,7 +186,7 @@ var LastFm = new Class({
                 'class': 'extBtn googleBtn'
             }).inject(btnsEl);
 
-            if (self.debug) console.info("Track", track);
+            if (self.debug) console.info("Rendered Track", track);
 
             el.inject(recentTracksEl);
 
@@ -168,30 +194,28 @@ var LastFm = new Class({
 
         // @param {array} tracks
         addRecentTracks = function () {
-            tracks.each(generateTrackHTML);
+            tracks.each(function (track, index) {
+                self.requests.getTrackInfo.send('mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
+            });
         },
 
+        // Getting the list of recent tracks from Last.fm
+        // @returns Request.JSON for queuing
         getRecentTracks = function () {
 
+            // @see http://mootools.net/docs/more/Request/Request.Queue
             // @see http://mootools.net/docs/core/Request/Request.JSON
             // @see http://mootools.net/docs/core/Request/Request
-            var request = new Request.JSON({
+            return new Request.JSON({
 
-                url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&format=json&page=' + encodeURIComponent(page) + '&extended=1&limit=' + encodeURIComponent(self.perPage),
-
-                onRequest: function () {
-                    if (self.debug) console.info('onRequest');
-                    self.loadingSpinnerEl.set('text', 'Loading...');
-                },
+                url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&format=json&extended=1&limit=' + encodeURIComponent(self.perPage),
 
                 onSuccess: function (jsonObj) {
-                    if (self.debug) console.info('onSuccess', jsonObj);
+
+                    //if (self.debug) console.info('onSuccess', jsonObj);
 
                     if (jsonObj.recenttracks && typeof jsonObj.recenttracks['@attr'] === 'undefined') {
                         console.error('Error retrieving tracks!', jsonObj);
-                        setTimeout(function () {
-                            getRecentTracks();
-                        }, 2000);
                         return;
                     }
 
@@ -214,30 +238,45 @@ var LastFm = new Class({
 
                     nav.init(page);
 
-                },
-
-                onComplete: function (jsonObj) {
-                    if (self.debug) console.info('onComplete', jsonObj);
-                },
-
-                onError: function (text, error) {
-                    console.error(text, error);
-                },
-
-                onFailure: function (xhr) {
-                    console.error(xhr);
                 }
 
-                /* For testing
-                , data: {
-                json: JSON.encode(data)
-                }
-                */
-
-            }).send();
+            });
 
         },
 
+        // @param {object} track
+        // @param {function} callback
+        getTrackInfo = function () {
+
+            // This a Request.Queue so it can be used in the getrecenttracks request
+            return new Request.JSON({
+
+                url: 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&autocorrect=1&format=json',
+
+                onRequest: function (jsonObj) {
+                    self.loadingSpinnerEl.set('text', 'Loading track info...');
+                },
+
+                onSuccess: function (jsonObj) {
+
+                    //console.info('onSuccess getTrackInfo', jsonObj.track);
+
+                    var info = jsonObj.track;
+
+                    // find the track we just updated and add the meta data
+                    tracks.each(function (track, index) {
+                        if (track.mbid === info.mbid) {
+                            tracks[index].info = info;
+                        }
+                    });
+
+                }
+
+            });
+
+        },
+
+        // @TODO: should probably be it's own Class
         nav = {
 
             init: function (page) {
@@ -273,7 +312,7 @@ var LastFm = new Class({
                 page = pageNrEl.value;
                 page = nav.init(page);
                 if (self.debug) console.info('Clicked getPageBtn', page);
-                getRecentTracks();
+                self.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
             },
 
             getPrevPage: function (e) {
@@ -282,7 +321,7 @@ var LastFm = new Class({
                 page = nav.init(page);
                 pageNrEl.value = page;
                 if (self.debug) console.info('getPagePrev', page);
-                getRecentTracks();
+                self.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
             },
 
             getNextPage: function (e) {
@@ -291,7 +330,7 @@ var LastFm = new Class({
                 page = nav.init(page);
                 pageNrEl.value = page;
                 if (self.debug) console.info('getPageNext', page);
-                getRecentTracks();
+                self.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
             }
 
         };
@@ -301,50 +340,19 @@ var LastFm = new Class({
         getPagePrevEl.addEvent('click', nav.getPrevPage);
         getPageNextEl.addEvent('click', nav.getNextPage);
 
-        getRecentTracks();
+        // Collect all requests here
 
-        var getTracksInterval = setInterval(getRecentTracks, 1000 * 60 * 3);
+        this.requests = {
+            'getRecentTracks': getRecentTracks(),
+            'getTrackInfo': getTrackInfo()
+        };
 
-    },
+        this.myQueue.addRequest("getRecentTracks", this.requests.getRecentTracks);
+        this.myQueue.addRequest("getTrackInfo", this.requests.getTrackInfo);
 
-    // @param {object} track
-    // @param {function} callback
-    getTrackInfo: function (track) {
+        this.requests.getRecentTracks.send('page=' + encodeURIComponent(page));
 
-        var self = this,
-            track = (typeof track !== "undefined") ? track : { 'artist': '', 'name': '', 'mbid': '' },
-
-            artist = track.artist.name || '',
-            name = track.name || '',
-            mbid = track.mbid || '',
-
-            request = new Request.JSON({
-
-                url: 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&mbid=' + encodeURIComponent(mbid) + '&artist=' + encodeURIComponent(artist) + '&track=' + encodeURIComponent(name) + '&autocorrect=1&format=json',
-
-                onRequest: function (jsonObj) {
-                    self.loadingSpinnerEl.set('text', 'Loading track info...');
-                },
-
-                onSuccess: function (jsonObj) {
-                    self.loadingSpinnerEl.empty();
-                    console.info('onSuccess', jsonObj);
-                    return jsonObj.track;
-                },
-
-                onComplete: function (jsonObj) {
-                    if (self.debug) console.info('onComplete', jsonObj);
-                },
-
-                onError: function (text, error) {
-                    console.error(text, error);
-                },
-
-                onFailure: function (xhr) {
-                    console.error(xhr);
-                }
-
-            }).send();
+        var getTracksInterval = setInterval(this.requests.getRecentTracks.send, 1000 * 60 * 3);
 
     },
 

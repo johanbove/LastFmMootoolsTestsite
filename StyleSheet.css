@@ -31,9 +31,8 @@ body {
 }
 
 .wrapper {
-    min-width: 320px;
-    width: 80%;
-    margin: auto auto;
+    min-width: 320px;    
+    margin: auto 1%;
 }
 
 h1, h2, nav {
@@ -76,6 +75,11 @@ ul {
     padding:  0;
 }
 
+#loadingSpinner {
+    text-align: center;
+    font-style:  italic;
+}
+
 #recentTracks {
     margin:  20px 0;
     overflow:  hidden;
@@ -87,12 +91,16 @@ li.track {
     min-height: 64px;
     padding: 0;   
     margin: 1% 1.5%;
-    min-height: 225px;
-    min-width: 180px;
+    min-width: 300px;
     width: 30%;
     text-align: center;
     float: left;
     position:  relative;
+    overflow:  hidden;
+}
+
+li.track:nth-child(3n+1) {
+    clear: left;
 }
 
 li.track .tilde {
@@ -100,8 +108,8 @@ li.track .tilde {
 }
 
 .thumb {
-    height: 128px;
-    width:  128px;
+    height: auto;
+    width:  100%;
     margin: 0 10px 0 0;
     box-shadow:  rgba(0,0,0,1) 1px 1px 3px;
     cursor:  pointer;
@@ -110,7 +118,8 @@ li.track .tilde {
     transition:  all .5s;
     -webkit-filter: grayscale(45%);
     filter: grayscale(45%);
-    margin:  5%;
+    margin:  5% 0;
+    max-width:  300px;
 }
 
 li.track.selected .thumb, li.track:hover .thumb, li.track:focus .thumb, .thumb:hover, .thumb:focus {

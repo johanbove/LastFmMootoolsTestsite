@@ -10,7 +10,7 @@ Uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
 Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
 JavaScript concatenation done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
 
-Current version: 0.2
+Current version: 0.3
 
 Source
 ------
@@ -50,10 +50,13 @@ Plans
 - [x] Optimize page loading by keeping all files local and concatenate the JavaScript, using Uglify2.
 - [ ] Move the Deezer JavaScript alert to a custom dialog element inside the page since it's not working in IE with high security settings active.
 - [ ] Add browser history for pagination and URL hash tags for bookmarking (?)
-- [ ] Add currently playing status for the first song in the list if start time + duration is before now. Challenge: Last.fm is not returning the duration of the track in the original request.
+- [x] Add currently playing status for the first song in the list if start time + duration is before now. Challenge: Last.fm is not returning the duration of the track in the original request.
 - [ ] Add SoundCloud artist lookup!
 - [ ] i18n fun: add NL, FR, etc.
 - [x] ~~Make it possible to toggle the long introduction out of the way.~~
 - [x] Moved the text section to the bottom of the page.
 - [x] Used bigger images for more flexibility.
-- [x] Removed background styling of the section and tracks. Looks better!   
+- [x] Removed background styling of the section and tracks. Looks better!
+- [x] Implemented Mootools More plugin "Request.Queue" and change requests with the queue to prevent callback hell.
+- [x] Add song duration from Last.fm if available.
+- [ ] Add nice "loading spinner".

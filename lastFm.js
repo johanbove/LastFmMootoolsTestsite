@@ -171,7 +171,7 @@ var LastFm = new Class({
 
             var theTrack = new Track(trackData),
                 artist, title, album, thumb,
-                el, imgEl, artistEl, nameEl, albumEl, btnsEl, metaEl, dateEl, deezerSearchBtnEl, lastFmBtnEl, googleBtnEl,
+                el, imgEl, artistEl, nameEl, albumEl, btnsEl, metaEl, dateEl, deezerSearchBtnEl, lastFmBtnEl, googleBtnEl, mbid, infoEl,
                 missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb', 'width': 128, 'height': 128 }),
                 missingImgElClone,
                 timestamp = 0, timestampFromNow = '', timestampCalendar = '',
@@ -190,6 +190,7 @@ var LastFm = new Class({
             artist = track.artist.name;
             title = track.name;
             album = track.album['#text'];
+            mbid = track.mbid || "";
 
             if (track.date) {
                 timestamp = moment.unix(track.date.uts);
@@ -221,6 +222,8 @@ var LastFm = new Class({
 
             // @see http://mootools.net/docs/core/Element/Element
             el = new Element('div.track', {
+                'id': 'track-' + index,
+                'data-mbid': mbid,
                 'events': {
                     'click': function (e) {
                         // unselect previously selected
@@ -233,6 +236,7 @@ var LastFm = new Class({
                 }
             });
 
+            // First track is last track scrobbled
             if (index === 0) {
 
                 el.addClass('first');
@@ -244,9 +248,11 @@ var LastFm = new Class({
                     $$('.background').set("style", "background-image:url(" + track.image[3]['#text'] + ")");
                     window.setTimeout(function () {
                         if (self.debug) console.info("starting getColorTag request", track.image[0]['#text']);
-                        //self.requests.getColorTag.send('url=' + track.image[0]['#text']);
+                        self.requests.getColorTag.send('url=' + track.image[0]['#text']);
                     }, 3000);
                 }
+
+                self.requests.getDuckDuckGoInfo.send("q=" + encodeURIComponent(artist));
 
             }
 
@@ -283,6 +289,7 @@ var LastFm = new Class({
             artistEl = new Element('span.artist', { 'html': artist }).inject(metaEl);
             nameEl = new Element('span.name', { 'html': title }).inject(metaEl);
             albumEl = new Element('span.album', { 'html': album }).inject(metaEl);
+            infoEl = new Element('div.info').inject(el);
 
             if (timestampCalendar.length && timestampFromNow.length) {
                 dateEl = new Element('span.date', { 'html': '<span class="tilde">~</span>' + timestampCalendar + '<br /> or ' + timestampFromNow + ' ' + durationEl }).inject(metaEl);
@@ -481,6 +488,7 @@ var LastFm = new Class({
                 },
                 onSuccess: function (jsonObj) {
                     console.info(jsonObj);
+                    $$('#track-0 .info').set('html', '<p>' + jsonObj.AbstractText + '</p><p><a href="' + jsonObj.AbstractURL + '">Source</a></p>');
                 },
                 onComplete: function (name, instance, text, xml) {
                     self.loadingSpinnerEl.empty();
@@ -507,7 +515,7 @@ var LastFm = new Class({
 
         this.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
 
-        var getTracksInterval = setInterval(this.requests.getRecentTracks.send, 1000 * 60 * .5);
+        var getTracksInterval = setInterval(this.requests.getRecentTracks.send, 1000 * 60 * 3);
 
         self.nav = new Nav({ 'lastFm': self });
 

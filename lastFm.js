@@ -108,6 +108,9 @@ var Nav = new Class({
 
 });
 
+/**
+ *  Mootools Class for LastFM
+ */
 var LastFm = new Class({
 
     Implements: [Options, Events],
@@ -160,8 +163,8 @@ var LastFm = new Class({
                     console.info('onComplete queue: ' + name + ' response: ', text, xml);
                 }
             },
-            onError: function (text, error) {
-                console.error(text, error);
+            onError: function (code, error) {
+                console.error(code, error);
             },
             onFailure: function (xhr) {
                 console.error(xhr);
@@ -218,7 +221,7 @@ var LastFm = new Class({
                 tags = [];
 
             if (!track.artist || !track.name) {
-                console.error(track);
+                console.error("Expecting valid track");
                 return;
             }
 
@@ -332,6 +335,7 @@ var LastFm = new Class({
 
             }
 
+            // Create DOM elements
             metaEl = new Element('div.meta').inject(el);
             btnsEl = new Element('div.btns').inject(el);
             artistEl = new Element('span.artist', { 'html': artist }).inject(metaEl);
@@ -345,7 +349,7 @@ var LastFm = new Class({
 
             // Buttons
 
-            // @TODO: Should I create these ones outside of the foreach and then clone and adopt?
+            // @TODO: Question: Should I create these outside of the foreach and clone and adopt?
             deezerSearchBtnEl = new Element('a', {
                 href: '#',
                 text: 'Deezer',
@@ -382,6 +386,7 @@ var LastFm = new Class({
 
         // Parses through the colors returns by getColorTag
         // @see https://www.mashape.com/apicloud/colortag#!documentation
+        // @param {object} jsonObj
         this.parseColors = function (jsonObj) {
 
             var tags = jsonObj.tags || [],
@@ -391,6 +396,7 @@ var LastFm = new Class({
                 textColor = "",
                 colors = [],
             // @see http://24ways.org/2010/calculating-color-contrast/
+            // @param {string} hexcolor
                 getContrastYIQ = function (hexcolor) {
                     hexcolor = hexcolor.replace('#', '');
                     var r = parseInt(hexcolor.substr(0, 2), 16),
@@ -426,10 +432,10 @@ var LastFm = new Class({
 
         };
 
-        // @param {array} tracks
+        // Prepares rendering of the track data.
         this.addRecentTracks = function () {
 
-            var track;
+            var track = {};
 
             self.loadingSpinnerEl.empty();
 
@@ -508,6 +514,7 @@ var LastFm = new Class({
 
                     var info = jsonObj.track;
 
+                    // Check if we actually have tracks to update
                     if (self.tracks.length) {
 
                         // find the track we just updated and add the meta data
@@ -516,9 +523,9 @@ var LastFm = new Class({
                                 self.tracks[index].info = info;
                             }
                         });
-
+                    // Single track found, but check it's okay.
                     } else {
-                        if (self.tracks.mbid === info.mbid) {
+                        if (self.tracks.mbid && self.tracks.mbid === info.mbid) {
                             self.tracks.info = info;
                         }
                     }
@@ -544,12 +551,13 @@ var LastFm = new Class({
                         console.info('onComplete queue: ' + name + ' response: ', text, xml);
                     }
                 },
-                onError: function (text, error) {
-                    console.error(text, error);
+                onError: function (code, error) {
+                    console.error(code, error);
                 }
             });
         };
 
+        // Returns search queries from DuckDuckGo
         this.getDuckDuckGoInfo = function () {
             return new Request.JSON({
                 url: 'https://duckduckgo-duckduckgo-zero-click-info.p.mashape.com/?no_html=1&no_redirect=1&skip_disambig=1&format=json',
@@ -575,7 +583,7 @@ var LastFm = new Class({
 
                     } else {
                         // clear the element if nothing can be shown
-                        $$('#track-0 .info').set('html','');
+                        $$('#track-0 .info').set('html', '');
                     }
                 },
                 onComplete: function (name, instance, text, xml) {
@@ -584,8 +592,8 @@ var LastFm = new Class({
                         console.info('onComplete queue: ' + name + ' response: ', text, xml);
                     }
                 },
-                onError: function (text, error) {
-                    console.error(text, error);
+                onError: function (code, error) {
+                    console.error(code, error);
                 }
             });
         };
@@ -601,7 +609,6 @@ var LastFm = new Class({
 
         this.myQueue.addRequest("getRecentTracks", this.requests.getRecentTracks);
         this.myQueue.addRequest("getTrackInfo", this.requests.getTrackInfo);
-        //this.myQueue.addRequest("getColorTag", this.requests.getColorTag);
 
         this.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
 

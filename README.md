@@ -11,7 +11,10 @@ Also consuming [DuckDuckGo Zero-click Info API](https://www.mashape.com/duckduck
 Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
 JavaScript concatenation done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
 
-Current version: 0.3.2
+Releases
+--------
+
+Current version: [v0.3.2-beta](https://github.com/johanbove/LastFmMootoolsTestsite/releases/tag/v0.3.2-beta)
 
 Source
 ------

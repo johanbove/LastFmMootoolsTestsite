@@ -139,7 +139,7 @@ footer {
 
 .track .info img {
     margin: 20px 0 0;
-    width:  60%;
+    max-width:  60%;
 }
 
 .track.selected .thumb, .track:hover .thumb, .track:focus .thumb, .thumb:hover, .thumb:focus {

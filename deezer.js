@@ -1,3 +1,9 @@
+/*jshint undef: true, unused: true, browser: true */
+/*global Class, Options, console, DZ */
+
+/**
+*   Sets up Deezer
+*/
 var Deezer = new Class({
 
     Implements: Options,
@@ -9,7 +15,9 @@ var Deezer = new Class({
     },
 
     initialize: function (options) {
-
+        
+        "use strict";
+        
         this.setOptions(options);
 
         var self = this,
@@ -17,6 +25,16 @@ var Deezer = new Class({
             appId = this.options.appId,
             channelUrl = this.options.channelUrl;
 
+        // @param {string} userName
+        this.user = function (username) {
+
+            // Gets public information for a Deezer user
+            DZ.api('search/user?q=' + encodeURIComponent(username), function (response) {
+                console.info('getDeezerInfo', response.data[0]);
+            });
+
+        };
+        
         // @see: http://developers.deezer.com/sdk/javascript/init
         window.dzAsyncInit = function () {
 
@@ -28,26 +46,20 @@ var Deezer = new Class({
             // @TODO: this doesn't seem to trigger...
             DZ.ready(function (sdk_options) {
                 console.log('DZ SDK is ready', sdk_options);
-                user(username);
+                self.user(username);
             });
 
-            user(username);
+            self.user(username);
 
         };
 
     },
 
-    // @param {string} userName
-    user: function (username) {
-        // Gets public information for a Deezer user
-        DZ.api('search/user?q=' + encodeURIComponent(username), function (response) {
-            console.info('getDeezerInfo', response.data[0]);
-        });
-    },
-
     // @param {string} q
     search: function (q) {
 
+        "use strict";
+        
         console.info('deezerSearch', q);
 
         DZ.api('search?q=' + encodeURIComponent(q), function (response) {
@@ -59,22 +71,25 @@ var Deezer = new Class({
                 i18n = {
                     hit: 'hit',
                     hits: 'hits'
-                }
+                },
+                txtNrHits,
+                openLinkTxt = "Open first Deezer track page?",
+                txtHitsConfirm,
+                linkToOpen;
 
             if (total === undefined || total === 0) {
 
-                if (confirm('Sorry! Nothing found on Deezer for:\n' + q + '\n\nTry again?')) {
+                if (window.confirm('Sorry! Nothing found on Deezer for:\n' + q + '\n\nTry again?')) {
                     window.open('http://www.deezer.com/search/' + q.replace(/"/g, ""));
-                };
+                }
 
             } else {
 
                 firstResult = response.data[0];
 
-                var txtNrHits = (total === 1) ? i18n.hit : i18n.hits,
-                    openLinkTxt = "Open first Deezer track page?",
-                    txtHitsConfirm = 'Found ' + total + ' ' + txtNrHits + '!\n"' + firstResult.title + '" by ' + firstResult.artist.name + '\n\n',
-                    linkToOpen = firstResult.link;
+                txtNrHits = (total === 1) ? i18n.hit : i18n.hits;
+                txtHitsConfirm = 'Found ' + total + ' ' + txtNrHits + '!\n"' + firstResult.title + '" by ' + firstResult.artist.name + '\n\n';
+                linkToOpen = firstResult.link;
 
                 if (total > 1) {
                     openLinkTxt = "%s tracks were found. Open Deezer results page?".replace('%s', total);
@@ -83,7 +98,7 @@ var Deezer = new Class({
 
                 txtHitsConfirm += openLinkTxt;
 
-                if (confirm(txtHitsConfirm)) {
+                if (window.confirm(txtHitsConfirm)) {
                     window.open(linkToOpen);
                 }
 
@@ -102,4 +117,4 @@ var Deezer = new Class({
 
 });
 
-var deezer = new Deezer();
+window.deezer = new Deezer();

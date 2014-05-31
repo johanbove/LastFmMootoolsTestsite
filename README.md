@@ -10,7 +10,7 @@ Uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
 Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
 JavaScript concatenation done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
 
-Current version: 0.31
+Current version: 0.3.2
 
 Source
 ------
@@ -22,7 +22,7 @@ Demo
 
 Plans
 -----
-- [ ] Learn more about [MooTools](http://mootools.net/docs/core/Core/Core).
+- [x] Learn more about [MooTools](http://mootools.net/docs/core/Core/Core).
 - [ ] Use a templating engine, like [used in sammyjs](http://sammyjs.org/docs/tutorials/json_store_1). This would replace having to create DOM elements on the fly.
 - [ ] Create a Sammy application doing the same thing.
 - [ ] Create a Knockoutjs + jQuery version of this application.
@@ -65,3 +65,7 @@ Plans
 - [x] Link up with DuckDuckGo to get more information about the artists.
 - [x] Move nav to separate Class.
 - [ ] Make sure only new tracks are added to the initial page. Avoid page refreshes.
+- [x] ~~Try out Brackets as an IDE.~~
+- [ ] Instead of keeping todo's in this list, use GitHub "issues".
+- [x] Use JSHint for JS code quality checks.
+- [ ] Add JS unit testing framework.

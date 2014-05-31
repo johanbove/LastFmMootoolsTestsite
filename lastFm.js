@@ -1,30 +1,36 @@
-// @see http://24ways.org/2010/calculating-color-contrast/
-function getContrastYIQ(hexcolor){
-    hexcolor = hexcolor.replace('#', '');
-	var r = parseInt(hexcolor.substr(0,2),16),
-	    g = parseInt(hexcolor.substr(2,2),16),
-	    b = parseInt(hexcolor.substr(4,2),16),
-	    yiq = ((r*299)+(g*587)+(b*114))/1000;
-	return yiq; //(yiq >= 128) ? 'black' : 'white';
-}
+/*jshint undef: true, unused: true, browser: true */
+/*global Class, Options, console, $, $$, Events, Request, Element, moment, deezer */
 
+/**
+ * Mootools Class for Track
+ */
 var Track = new Class({
     initialize: function (track) {
+        "use strict";
         this.data = track;
     }
 });
 
+/**
+ * Mootools Class for Nav
+ */
 var Nav = new Class({
 
     Implements: [Options],
 
     options: {
-        'debug': true
+        'debug': false
     },
 
     initialize: function (options) {
 
-        var self = this;
+        "use strict";
+        
+        var self = this,
+            pageNrEl = $('pageNr'),
+            getPageBtnEl = $('getPageBtn'),
+            getPagePrevEl = $('getPagePrev'),
+            getPageNextEl = $('getPageNext');
 
         this.setOptions(options);
 
@@ -32,11 +38,6 @@ var Nav = new Class({
         this.debug = this.options.debug;
         this.page = 1;
         this.lastPage = 1;
-
-        var pageNrEl = $('pageNr'),
-            getPageBtnEl = $('getPageBtn'),
-            getPagePrevEl = $('getPagePrev'),
-            getPageNextEl = $('getPageNext');
 
         this.init = function (lastFm) {
             self.lastFm = lastFm;
@@ -69,7 +70,9 @@ var Nav = new Class({
         this.getPage = function (e) {
             e.preventDefault();
             self.page = pageNrEl.value;
-            if (self.debug) console.info('Clicked getPageBtn', self.page);
+            if (self.debug) {
+                console.info('Clicked getPageBtn', self.page);
+            }
             self.lastFm.page = self.page;
             self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
         };
@@ -78,7 +81,9 @@ var Nav = new Class({
             e.preventDefault();
             self.page = parseInt(pageNrEl.value, 10) - 1;
             pageNrEl.value = self.page;
-            if (self.debug) console.info('getPagePrev', self.page);
+            if (self.debug) {
+                console.info('getPagePrev', self.page);
+            }
             self.lastFm.page = self.page;
             self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
         };
@@ -87,7 +92,9 @@ var Nav = new Class({
             e.preventDefault();
             self.page = parseInt(pageNrEl.value, 10) + 1;
             pageNrEl.value = self.page;
-            if (self.debug) console.info('getPageNext', self.page);
+            if (self.debug) {
+                console.info('getPageNext', self.page);
+            }
             self.lastFm.page = self.page;
             self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
         };
@@ -109,11 +116,17 @@ var LastFm = new Class({
     options: {
         username: 'joe-1',
         apiKey: '6944bec73e711c56ae9955c77d642c98',
+        mashapeKey: 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA',
         perPage: 10,
-        debug: false
+        debug: false,
+        colorTag: false,
+        duckduckGo: true,
+        getTracksUpdateDelay: 3 // minutes
     },
 
     initialize: function (options) {
+
+        "use strict";
 
         var self = this;
 
@@ -136,12 +149,16 @@ var LastFm = new Class({
         // @see http://mootools.net/docs/more/Request/Request.Queue
         this.myQueue = new Request.Queue({
             onRequest: function () {
-                if (self.debug) console.info('onRequest');
+                if (self.debug) {
+                    console.info('onRequest');
+                }
                 self.loadingSpinnerEl.set('text', 'Loading...');
             },
             onComplete: function (name, instance, text, xml) {
                 self.loadingSpinnerEl.empty();
-                //if (self.debug) console.info('onComplete queue: ' + name + ' response: ', text);
+                if (self.debug) {
+                    console.info('onComplete queue: ' + name + ' response: ', text, xml);
+                }
             },
             onError: function (text, error) {
                 console.error(text, error);
@@ -150,7 +167,9 @@ var LastFm = new Class({
                 console.error(xhr);
             },
             onEnd: function () {
-                if (self.debug) console.info("Generating track html...");
+                if (self.debug) {
+                    console.info("Generating track html...");
+                }
                 if (self.tracks.length) {
                     self.tracks.each(self.generateTrackHTML);
                 } else {
@@ -170,11 +189,28 @@ var LastFm = new Class({
         this.generateTrackHTML = function (trackData, index) {
 
             var theTrack = new Track(trackData),
-                artist, title, album, thumb,
-                el, imgEl, artistEl, nameEl, albumEl, btnsEl, metaEl, dateEl, deezerSearchBtnEl, lastFmBtnEl, googleBtnEl, mbid, infoEl,
+                artist,
+                title,
+                album,
+                thumb,
+                el,
+                imgEl,
+                artistEl,
+                nameEl,
+                albumEl,
+                btnsEl,
+                metaEl,
+                dateEl,
+                deezerSearchBtnEl,
+                lastFmBtnEl,
+                googleBtnEl,
+                mbid,
+                infoEl,
                 missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb', 'width': 128, 'height': 128 }),
                 missingImgElClone,
-                timestamp = 0, timestampFromNow = '', timestampCalendar = '',
+                timestamp = 0,
+                timestampFromNow = '',
+                timestampCalendar = '',
                 track = theTrack.data,
                 durationEl = "",
                 genre = "",
@@ -207,7 +243,7 @@ var LastFm = new Class({
 
                 if (track.info.toptags && track.info.toptags.tag && track.info.toptags.tag.length > 1) {
 
-                    track.info.toptags.tag.each(function (tag, index) {
+                    track.info.toptags.tag.each(function (tag) {
                         tags.push(tag.name);
                     });
 
@@ -226,8 +262,9 @@ var LastFm = new Class({
                 'data-mbid': mbid,
                 'events': {
                     'click': function (e) {
+                        e.preventDefault();
                         // unselect previously selected
-                        $$('li.selected').each(function (el, index) {
+                        $$('li.selected').each(function (el) {
                             el.removeClass('selected');
                         });
                         // select new element
@@ -245,14 +282,23 @@ var LastFm = new Class({
                 $(document.body).set("class", genre);
 
                 if (track.image && track.image.length) {
+
                     $$('.background').set("style", "background-image:url(" + track.image[3]['#text'] + ")");
-                    window.setTimeout(function () {
-                        if (self.debug) console.info("starting getColorTag request", track.image[0]['#text']);
-                        self.requests.getColorTag.send('url=' + track.image[0]['#text']);
-                    }, 3000);
+
+                    if (self.options.colorTag) {
+                        window.setTimeout(function () {
+                            if (self.debug) {
+                                console.info("starting getColorTag request", track.image[0]['#text']);
+                            }
+                            self.requests.getColorTag.send('url=' + track.image[0]['#text']);
+                        }, 3000);
+                    }
+
                 }
 
-                self.requests.getDuckDuckGoInfo.send("q=" + encodeURIComponent(artist));
+                if (self.options.duckduckGo) {
+                    self.requests.getDuckDuckGoInfo.send("q=" + encodeURIComponent(artist));
+                }
 
             }
 
@@ -271,9 +317,11 @@ var LastFm = new Class({
                     imgEl = new Element('img.thumb', {
                         'src': thumb['#text'],
                         'alt': thumb.size,
-                        'width': 128, 'height': 128,
+                        'width': 128,
+                        'height': 128,
                         'events': {
                             'click': function (e) {
+                                e.preventDefault();
                                 location.href = track.url;
                             }
                         }
@@ -324,34 +372,57 @@ var LastFm = new Class({
                 'class': 'extBtn googleBtn'
             }).inject(btnsEl);
 
-            if (self.debug) console.info("Rendered Track", track);
+            if (self.debug) {
+                console.info("Rendered Track", track);
+            }
 
             el.inject(self.recentTracksEl);
 
         };
 
         // Parses through the colors returns by getColorTag
+        // @see https://www.mashape.com/apicloud/colortag#!documentation
         this.parseColors = function (jsonObj) {
 
-            var len = jsonObj.tags.length,
-            i = len,
-            backgrColor = jsonObj.tags[0].label,
-            textColor = jsonObj.tags[jsonObj.tags.length - 1].label,
-            colors = [];
+            var tags = jsonObj.tags || [],
+                len = tags.length,
+                i = len,
+                backgrColor = "",
+                textColor = "",
+                colors = [],
+            // @see http://24ways.org/2010/calculating-color-contrast/
+                getContrastYIQ = function (hexcolor) {
+                    hexcolor = hexcolor.replace('#', '');
+                    var r = parseInt(hexcolor.substr(0, 2), 16),
+                        g = parseInt(hexcolor.substr(2, 2), 16),
+                        b = parseInt(hexcolor.substr(4, 2), 16),
+                        yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                    return yiq; //(yiq >= 128) ? 'black' : 'white';
+                };
 
+            // Calculate contrast value for the colors
             while (i) {
-                i--;
+                i = i - 1;
                 colors.push({ 'yiq': getContrastYIQ(jsonObj.tags[i].color), 'hex': jsonObj.tags[i].color });
             }
 
-            colors.sort(function (a, b) {
-                return a.yiq - b.yiq;
-            });
+            if (colors.length) {
 
-            backgrColor = colors[0].hex;
-            textColor = colors[colors.length - 1].hex;
+                // Sort based upon contrast
+                colors.sort(function (a, b) {
+                    return a.yiq - b.yiq;
+                });
 
-            $(document.body).set('style', 'background-color:' + backgrColor + ';color:' + textColor); $$("a").set('style', 'color:' + textColor);
+                backgrColor = colors[0].hex;    // could also use "label"
+                textColor = colors[colors.length - 1].hex;
+
+                // We want to use the color values on the body and link tags
+                if (backgrColor && textColor) {
+                    $(document.body).set('style', 'background-color:' + backgrColor + ';color:' + textColor);
+                    $$("a").set('style', 'color:' + textColor);
+                }
+
+            }
 
         };
 
@@ -365,7 +436,7 @@ var LastFm = new Class({
             self.recentTracksEl.empty();
 
             if (self.tracks.length) {
-                self.tracks.each(function (track, index) {
+                self.tracks.each(function (track) {
                     self.requests.getTrackInfo.send('mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
                 });
             } else {
@@ -427,7 +498,7 @@ var LastFm = new Class({
 
                 url: 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&autocorrect=1&format=json',
 
-                onRequest: function (jsonObj) {
+                onRequest: function () {
                     self.loadingSpinnerEl.set('text', 'Loading track info...');
                 },
 
@@ -452,7 +523,6 @@ var LastFm = new Class({
                         }
                     }
 
-
                 }
 
             });
@@ -463,14 +533,16 @@ var LastFm = new Class({
         this.getColorTag = function () {
             return new Request.JSON({
                 url: 'https://apicloud-colortag.p.mashape.com/tag-url.json?palette=w3c&sort=weight',
-                headers: { 'X-Mashape-Authorization': 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA' },
-                onRequest: function (jsonObj) {
+                headers: { 'X-Mashape-Authorization': self.options.mashapeKey },
+                onRequest: function () {
                     self.loadingSpinnerEl.set('text', 'Loading album art colors...');
                 },
                 onSuccess: self.parseColors,
                 onComplete: function (name, instance, text, xml) {
                     self.loadingSpinnerEl.empty();
-                    //if (self.debug) console.info('onComplete queue: ' + name + ' response: ', text);
+                    if (self.debug) {
+                        console.info('onComplete queue: ' + name + ' response: ', text, xml);
+                    }
                 },
                 onError: function (text, error) {
                     console.error(text, error);
@@ -481,18 +553,36 @@ var LastFm = new Class({
         this.getDuckDuckGoInfo = function () {
             return new Request.JSON({
                 url: 'https://duckduckgo-duckduckgo-zero-click-info.p.mashape.com/?no_html=1&no_redirect=1&skip_disambig=1&format=json',
-                headers: { 'X-Mashape-Authorization': 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA' },
+                headers: { 'X-Mashape-Authorization': self.options.mashapeKey },
                 method: 'get',
-                onRequest: function (jsonObj) {
+                onRequest: function () {
                     self.loadingSpinnerEl.set('text', 'Searching through DuckDuckGo ...');
                 },
                 onSuccess: function (jsonObj) {
-                    console.info(jsonObj);
-                    $$('#track-0 .info').set('html', '<p>' + jsonObj.AbstractText + '</p><p><a href="' + jsonObj.AbstractURL + '">Source</a></p>');
+                    var htmlOut = "";
+                    if (self.debug) {
+                        console.info(jsonObj);
+                    }
+                    if (jsonObj.AbstractText && jsonObj.AbstractText.length) {
+
+                        if (jsonObj.Image && jsonObj.Image.length) {
+                            htmlOut += '<img src="' + jsonObj.Image + '" alt="' + jsonObj.Heading + '" />';
+                        }
+
+                        htmlOut += '<p>' + jsonObj.AbstractText + '</p>' + '<p>Source: <a href="' + jsonObj.AbstractURL + '">' + jsonObj.AbstractSource + '</a></p>';
+
+                        $$('#track-0 .info').set('html', htmlOut);
+
+                    } else {
+                        // clear the element if nothing can be shown
+                        $$('#track-0 .info').set('html','');
+                    }
                 },
                 onComplete: function (name, instance, text, xml) {
                     self.loadingSpinnerEl.empty();
-                    //if (self.debug) console.info('onComplete queue: ' + name + ' response: ', text);
+                    if (self.debug) {
+                        console.info('onComplete queue: ' + name + ' response: ', text, xml);
+                    }
                 },
                 onError: function (text, error) {
                     console.error(text, error);
@@ -515,7 +605,7 @@ var LastFm = new Class({
 
         this.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
 
-        var getTracksInterval = setInterval(this.requests.getRecentTracks.send, 1000 * 60 * 3);
+        this.getTracksInterval = setInterval(this.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
 
         self.nav = new Nav({ 'lastFm': self });
 
@@ -525,5 +615,6 @@ var LastFm = new Class({
 
 // @see http://mootools.net/docs/core/Utilities/DOMReady
 window.addEvent('domready', function () {
-    lastFm = new LastFm({ 'perPage': 3, 'debug': true });
+    "use strict";
+    window.lastFm = new LastFm({ 'perPage': 3, 'debug': false });
 });

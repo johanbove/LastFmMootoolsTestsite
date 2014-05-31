@@ -104,7 +104,7 @@ footer {
     display:  inline-block;
     margin: 15px;
     min-width: 300px;
-    width: 30%;
+    width: 40%;
     position:  relative;
     text-align: left;
 }
@@ -130,6 +130,16 @@ footer {
     filter: grayscale(45%);
     margin:  5% 0;
     max-width:  300px;
+}
+
+.thumb.missing {
+    height:  300px;
+    background-color:  rgba(125,125,125,.5);
+}
+
+.track .info img {
+    margin: 20px 0 0;
+    width:  60%;
 }
 
 .track.selected .thumb, .track:hover .thumb, .track:focus .thumb, .thumb:hover, .thumb:focus {

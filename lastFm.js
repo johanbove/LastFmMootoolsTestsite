@@ -496,10 +496,10 @@ var LastFm = new Class({
 
                     self.nav.init(self);
 
-                    if (self.page > 1) {
-                        clearInterval(self.getTracksInterval);
-                    } else {
-                        self.getTracksInterval = setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
+                    window.clearInterval(self.getTracksInterval);
+
+                    if (self.page === 1) {
+                       self.getTracksInterval = window.setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
                     }
 
 

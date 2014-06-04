@@ -214,14 +214,14 @@ var LastFm = new Class({
                 timestamp = 0,
                 timestampFromNow = '',
                 timestampCalendar = '',
-                track = theTrack.data,
+                track = (theTrack.data.length) ? undefined : theTrack.data,
                 durationEl = "",
                 genre = "",
                 genreEl = "",
                 tags = [];
 
-            if (!track.artist || !track.name) {
-                console.error("Expecting valid track");
+            if (track === undefined || !track.artist || !track.name) {
+                console.log("Expecting valid track!", track);
                 return;
             }
 
@@ -467,12 +467,19 @@ var LastFm = new Class({
 
                     //if (self.debug) console.info('onSuccess', jsonObj);
 
+                    var attr;
+
                     if (jsonObj.recenttracks && typeof jsonObj.recenttracks['@attr'] === 'undefined') {
                         console.error('Error retrieving tracks!', jsonObj);
                         return;
                     }
 
-                    var attr = jsonObj.recenttracks['@attr'];
+                    if (typeof jsonObj.recenttracks === "undefined") {
+                        console.log("Error with jsonObj.recentracks");
+                        return;
+                    }
+
+                    attr = jsonObj.recenttracks['@attr'];
 
                     self.totalTracks = attr.total;
                     self.lastPage = attr.totalPages;
@@ -523,7 +530,7 @@ var LastFm = new Class({
                                 self.tracks[index].info = info;
                             }
                         });
-                    // Single track found, but check it's okay.
+                        // Single track found, but check it's okay.
                     } else {
                         if (self.tracks.mbid && self.tracks.mbid === info.mbid) {
                             self.tracks.info = info;
@@ -563,8 +570,11 @@ var LastFm = new Class({
                 url: 'https://duckduckgo-duckduckgo-zero-click-info.p.mashape.com/?no_html=1&no_redirect=1&skip_disambig=1&format=json',
                 headers: { 'X-Mashape-Authorization': self.options.mashapeKey },
                 method: 'get',
+                noCache: true,
                 onRequest: function () {
                     self.loadingSpinnerEl.set('text', 'Searching through DuckDuckGo ...');
+                    // Reset initially
+                    $$('#track-0 .info').set('html', '');
                 },
                 onSuccess: function (jsonObj) {
                     var htmlOut = "";
@@ -593,6 +603,7 @@ var LastFm = new Class({
                     }
                 },
                 onError: function (code, error) {
+                    $$('#track-0 .info').set('html', '');
                     console.error(code, error);
                 }
             });

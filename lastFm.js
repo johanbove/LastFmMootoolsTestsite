@@ -124,7 +124,7 @@ var LastFm = new Class({
         debug: false,
         colorTag: false,
         duckduckGo: true,
-        getTracksUpdateDelay: 3 // minutes
+        getTracksUpdateDelay: .5 // minutes
     },
 
     initialize: function (options) {
@@ -496,6 +496,13 @@ var LastFm = new Class({
 
                     self.nav.init(self);
 
+                    if (self.page > 1) {
+                        clearInterval(self.getTracksInterval);
+                    } else {
+                        self.getTracksInterval = setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
+                    }
+
+
                 }
 
             });
@@ -622,8 +629,6 @@ var LastFm = new Class({
         this.myQueue.addRequest("getTrackInfo", this.requests.getTrackInfo);
 
         this.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
-
-        this.getTracksInterval = setInterval(this.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
 
         self.nav = new Nav({ 'lastFm': self });
 

@@ -14,7 +14,7 @@ JavaScript concatenation done with [UglifyJS2](https://github.com/mishoo/UglifyJ
 Releases
 --------
 
-Current version: [v0.3.4-beta-fix](https://github.com/johanbove/LastFmMootoolsTestsite/releases/tag/v0.3.4-beta-fix)
+Current version: [v0.3.4-beta-fix-2](https://github.com/johanbove/LastFmMootoolsTestsite/releases/tag/v0.3.4-beta-fix-2)
 
 Source
 ------

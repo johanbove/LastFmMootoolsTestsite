@@ -341,7 +341,7 @@ var LastFm = new Class({
             artistEl = new Element('span.artist', { 'html': artist }).inject(metaEl);
             nameEl = new Element('span.name', { 'html': title }).inject(metaEl);
             albumEl = new Element('span.album', { 'html': album }).inject(metaEl);
-            infoEl = new Element('div.info').inject(el);
+            infoEl = new Element('div.info', { 'html': '' }).inject(el);
 
             if (timestampCalendar.length && timestampFromNow.length) {
                 dateEl = new Element('span.date', { 'html': '<span class="tilde">~</span>' + timestampCalendar + '<br /> or ' + timestampFromNow + ' ' + durationEl }).inject(metaEl);

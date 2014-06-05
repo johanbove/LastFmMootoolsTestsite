@@ -124,7 +124,7 @@ var LastFm = new Class({
         debug: false,
         colorTag: false,
         duckduckGo: true,
-        getTracksUpdateDelay: .5 // minutes
+        getTracksUpdateDelay: 3 // minutes
     },
 
     initialize: function (options) {
@@ -178,6 +178,7 @@ var LastFm = new Class({
                 } else {
                     self.generateTrackHTML(self.tracks, 0);
                 }
+
             }
         });
 
@@ -185,6 +186,7 @@ var LastFm = new Class({
         this.lastPage = 1;
         this.totalTracks = 0;
         this.tracks = [];
+        this.lastScrobble = {};
 
         // Creates the HTML code used to display the scrobbled track.
         // @param {object} track
@@ -299,10 +301,6 @@ var LastFm = new Class({
 
                 }
 
-                if (self.options.duckduckGo) {
-                    self.requests.getDuckDuckGoInfo.send("q=" + encodeURIComponent(artist));
-                }
-
             }
 
             // Gathering track elements
@@ -381,6 +379,13 @@ var LastFm = new Class({
             }
 
             el.inject(self.recentTracksEl);
+
+            if (self.options.duckduckGo) {
+                if (self.debug) {
+                    console.info("Searching DuckDuckGo for", self.lastScrobble.artist.name);
+                }
+                self.requests.getDuckDuckGoInfo.send("q=" + encodeURIComponent(self.lastScrobble.artist.name));
+            }
 
         };
 
@@ -492,6 +497,8 @@ var LastFm = new Class({
 
                     self.tracks = jsonObj.recenttracks.track;
 
+                    self.lastScrobble = self.tracks[0];
+
                     self.addRecentTracks();
 
                     self.nav.init(self);
@@ -499,7 +506,7 @@ var LastFm = new Class({
                     window.clearInterval(self.getTracksInterval);
 
                     if (self.page === 1) {
-                       self.getTracksInterval = window.setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
+                        self.getTracksInterval = window.setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
                     }
 
 
@@ -571,6 +578,10 @@ var LastFm = new Class({
             });
         };
 
+        this.clearInfoEl = function () {
+            $$('#track-0 .info').set('html');
+        };
+
         // Returns search queries from DuckDuckGo
         this.getDuckDuckGoInfo = function () {
             return new Request.JSON({
@@ -581,14 +592,21 @@ var LastFm = new Class({
                 onRequest: function () {
                     self.loadingSpinnerEl.set('text', 'Searching through DuckDuckGo ...');
                     // Reset initially
-                    $$('#track-0 .info').set('html', '');
+                    self.clearInfoEl();
                 },
                 onSuccess: function (jsonObj) {
+
                     var htmlOut = "";
+
                     if (self.debug) {
                         console.info(jsonObj);
+                        console.log("lastScrobble", self.lastScrobble, jsonObj.AbstractText.indexOf(self.lastScrobble.artist.name));
                     }
-                    if (jsonObj.AbstractText && jsonObj.AbstractText.length) {
+
+                    self.clearInfoEl();
+
+                    // Making sure the info returned at least contains the current artist name, if it's not, we don't show anything.
+                    if (jsonObj.AbstractText && jsonObj.AbstractText.length && self.lastScrobble.artist && jsonObj.AbstractText.indexOf(self.lastScrobble.artist.name) !== -1) {
 
                         if (jsonObj.Image && jsonObj.Image.length) {
                             htmlOut += '<img src="' + jsonObj.Image + '" alt="' + jsonObj.Heading + '" />';
@@ -598,10 +616,8 @@ var LastFm = new Class({
 
                         $$('#track-0 .info').set('html', htmlOut);
 
-                    } else {
-                        // clear the element if nothing can be shown
-                        $$('#track-0 .info').set('html', '');
                     }
+
                 },
                 onComplete: function (name, instance, text, xml) {
                     self.loadingSpinnerEl.empty();
@@ -610,7 +626,7 @@ var LastFm = new Class({
                     }
                 },
                 onError: function (code, error) {
-                    $$('#track-0 .info').set('html', '');
+                    self.clearInfoEl();
                     console.error(code, error);
                 }
             });

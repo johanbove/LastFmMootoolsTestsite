@@ -25,6 +25,10 @@
   src: local('Ubuntu Mono Bold Italic'), local('UbuntuMono-BoldItalic'), url(http://themes.googleusercontent.com/static/fonts/ubuntumono/v4/n_d8tv_JOIiYyMXR4eaV9QRV2F9RPTaqyJ4QibDfkzM.woff) format('woff');
 }
 
+html {
+    overflow-y: scroll;
+}
+
 body {
     color:  rgba(255,255,255,1);
     font-family:  'Ubuntu Mono', consolas, monospace;
@@ -53,7 +57,7 @@ body {
 }
 
 .wrapper {
-    min-width: 320px;
+    min-width: 300px;
     max-width: 1024px;
     margin: auto;
     position: relative;
@@ -224,6 +228,35 @@ footer {
     
     header h1, header h2 {
         display:  inline-block;    
+    }
+
+    #recentTracks .first .thumb {
+        margin-bottom:  2%;
+    }
+
+    #recentTracks .first {
+        width:  auto;
+    }
+
+    #recentTracks .first .meta {
+        position: absolute;
+        top: 50px;
+        left: 350px;
+    }
+
+    #recentTracks .first .btns {
+        position: absolute;
+        top: 300px;
+        left: 350px;
+    }
+
+    #recentTracks .first .info {
+        overflow:  hidden;
+    }
+
+    #recentTracks .first .info img:first-child {
+        float: left;
+        margin: 2% 3% 0 0;    
     }
 
 }

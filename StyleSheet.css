@@ -53,9 +53,10 @@ body {
 }
 
 .wrapper {
-    min-width: 320px;    
-    margin: auto 1%;
-    position:  relative;
+    min-width: 320px;
+    max-width: 1024px;
+    margin: auto;
+    position: relative;
 }
 
 a  {
@@ -203,8 +204,24 @@ footer {
     width: 45px;
 }
 
+#pagination {
+    text-align: center;
+}
+
+#pagination label {
+    display:  block;
+}
+
 @media (min-width: 600px) {
 
+    #pagination {
+        text-align: left;
+    }
+    
+    #pagination label {
+        display:  inline-block;
+    }
+    
     header h1, header h2 {
         display:  inline-block;    
     }

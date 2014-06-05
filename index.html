@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1" />
         <title>Scrobbled</title>
         <link rel="stylesheet" href="StyleSheet.css">
     </head>
@@ -15,7 +16,7 @@
 
             <header>
                 <h1>Scrobbled!</h1>
-                <h2><span id="userId">My</span> most recent scrobbles from a total of <span id="nrTotalTracks">?</span> (<span id="nrRecentTracks">?</span>)</h2>
+                <h2><span id="userId">My</span> most recent scrobbles from a total of <span id="nrTotalTracks">?</span></h2>
             </header>        
                        
             <noscript><section><p><strong>Please enable JavaScript!</strong></p></section></noscript>            
@@ -37,7 +38,7 @@
        
             <section>
                 <h3>About</h3>
-                <p>This little app displays the latest track <a href="http://last.fm/user/joe-1">I have been listening to</a>. The list updates itself every three minutes. I created it to learn the <a href="http://mootools.net/">MooTools</a> JavaScript library, and also for monkeying around with CSS3, Github and other tools. I call it my &quot;<em>Last.fm-Deezer-Scrobbling-MooTools</em>&quot; project.</p>
+                <p>This little app displays the latest <span id="nrRecentTracks">?</span> tracks <a href="http://last.fm/user/joe-1">I have been listening to</a>. The list updates itself every three minutes. I created it to learn the <a href="http://mootools.net/">MooTools</a> JavaScript library, and also for monkeying around with CSS3, Github and other tools. I call it my &quot;<em>Last.fm-Deezer-Scrobbling-MooTools</em>&quot; project.</p>
                 <p>Current version: v0.3.4</p>             
                 <h3>Credits</h3>
                 <p>All registered plays are tracked using the <a href="http://www.last.fm/api">Last.fm AudioScrobbler</a>. Most track plays are scrobbled from <a href="http://www.deezer.com">Deezer</a> and <a href="http://soundcloud.com">soundcloud.com</a>. Uses <a href="http://momentjs.com/">momentjs</a> for date parsing. JavaScript concatenation done using <a href="https://github.com/mishoo/UglifyJS2">UglifyJS2</a>. Background image found on <a href="http://subtlepatterns.com/tag/dark/">subtlepatterns</a>. Built with <a href="http://www.microsoft.com/web/webmatrix/">Microsoft's Webmatrix 3</a> which is a free and lightweight code editor which allows for running sites locally, including building and deploying your site.</p>

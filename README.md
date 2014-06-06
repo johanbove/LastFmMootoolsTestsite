@@ -3,13 +3,22 @@ LastFm Mootools Test App
 
 Intro
 -----
-This is my project to learn about [Mootools Core](http://mootools.net/docs/core).
+"Scrobbled" is the code name of this project.
+
+I created it to learn all about [Mootools Core](http://mootools.net/docs/core).
+
 Consuming public API's from [Last.fm API user.getRecentTracks](http://www.last.fm/api/show/user.getRecentTracks).
 And the cool [Deezer API](http://developers.deezer.com/api/).
-Uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
+
+It uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
+
 Also consuming [DuckDuckGo Zero-click Info API](https://www.mashape.com/duckduckgo/duckduckgo-zero-click-info#!documentation) for artist info lookups.
-Background image found on [subtlepatterns](http://subtlepatterns.com/tag/dark/).
-JavaScript concatenation done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
+
+JavaScript concatenation is done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
+
+Currently using Microsoft's Webmatrix 3 to work on the JavaScript, HTML and CSS code.
+
+JavaScript code is ''linted'' using command-line jsLint.
 
 Releases
 --------

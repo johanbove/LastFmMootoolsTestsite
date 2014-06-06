@@ -7,18 +7,11 @@ Intro
 
 I created it to learn all about [Mootools Core](http://mootools.net/docs/core).
 
-Consuming public API's from [Last.fm API user.getRecentTracks](http://www.last.fm/api/show/user.getRecentTracks).
-And the cool [Deezer API](http://developers.deezer.com/api/).
+The app is consuming public API's from [Last.fm API user.getRecentTracks](http://www.last.fm/api/show/user.getRecentTracks), [Deezer API](http://developers.deezer.com/api/) and [DuckDuckGo Zero-click Info API](https://www.mashape.com/duckduckgo/duckduckgo-zero-click-info#!documentation) for artist info lookups.
 
-It uses [momentjs](http://momentjs.com/) for brilliant time and date parsing.
+JavaScript concatenation is done with [UglifyJS2](https://github.com/mishoo/UglifyJS2). It implements [momentjs](http://momentjs.com/) for brilliant time and date parsing. The JavaScript code is also ''linted'' using command-line jsLint.
 
-Also consuming [DuckDuckGo Zero-click Info API](https://www.mashape.com/duckduckgo/duckduckgo-zero-click-info#!documentation) for artist info lookups.
-
-JavaScript concatenation is done with [UglifyJS2](https://github.com/mishoo/UglifyJS2).
-
-Currently using Microsoft's Webmatrix 3 to work on the JavaScript, HTML and CSS code.
-
-JavaScript code is ''linted'' using command-line jsLint.
+The application has been created with Microsoft's Webmatrix 3.
 
 Releases
 --------

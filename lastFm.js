@@ -164,9 +164,11 @@ var LastFm = new Class({
                 }
             },
             onError: function (code, error) {
+                self.loadingSpinnerEl.set('text', 'An error occurred: (' + code + ') ' + error);
                 console.error(code, error);
             },
             onFailure: function (xhr) {
+                self.loadingSpinnerEl.set('text', 'Failed to connect at ' + xhr);
                 console.error(xhr);
             },
             onEnd: function () {
@@ -178,7 +180,9 @@ var LastFm = new Class({
                 } else {
                     self.generateTrackHTML(self.tracks, 0);
                 }
-
+            },
+            onTimeout: function () {
+                self.loadingSpinnerEl.set('text', 'A timeout occurred connecting to the remote source!');
             }
         });
 

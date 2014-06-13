@@ -16,7 +16,7 @@ The application has been created with Microsoft's Webmatrix 3.
 Releases
 --------
 
-Current version: [v0.3.5-beta](https://github.com/johanbove/LastFmMootoolsTestsite/releases/tag/v0.3.5-beta)
+Current version: [v0.3.6-beta](https://github.com/johanbove/LastFmMootoolsTestsite/releases/tag/v0.3.6-beta)
 
 Source
 ------

@@ -211,8 +211,8 @@ var LastFm = new Class({
                 metaEl,
                 dateEl,
                 deezerSearchBtnEl,
-                lastFmBtnEl,
-                googleBtnEl,
+                lastFmTrackBtnEl,
+                googleArtistBtnEl,
                 mbid,
                 infoEl,
                 missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb', 'width': 128, 'height': 128 }),
@@ -365,17 +365,35 @@ var LastFm = new Class({
             }).inject(btnsEl);
 
             // @TODO: Should I create these ones outside of the foreach and then clone and adopt?
-            lastFmBtnEl = new Element('a', {
+            lastFmTrackBtnEl = new Element('a', {
                 href: track.url,
                 text: 'Last.fm',
-                'class': 'extBtn lastfmBtn'
+                'class': 'extBtn lastfmBtn',
+                'events': {
+                    'click': function (e) {
+                        if (self.debug) {
+                            console.info('lastFm clicked!', track.url);
+                        }
+                        //e.preventDefault();
+                        location.href = track.url;
+                    }
+                }
             }).inject(btnsEl);
 
             // @TODO: Should I create these ones outside of the foreach and then clone and adopt?
-            googleBtnEl = new Element('a', {
+            googleArtistBtnEl = new Element('a', {
                 href: 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(artist),
-                text: 'Google',
-                'class': 'extBtn googleBtn'
+                text: 'Google: ' + artist,
+                'class': 'extBtn googleBtn',
+                'events': {
+                    'click': function (e) {
+                        if (self.debug) {
+                            console.info('Google clicked!', 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(artist));
+                        }                        
+                        //e.preventDefault();
+                        location.href = 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(artist);
+                    }
+                }
             }).inject(btnsEl);
 
             if (self.debug) {

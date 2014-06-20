@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>QUnit Tests</title>
+	<link rel="stylesheet" href="//code.jquery.com/qunit/qunit-1.14.0.css">
+</head>
+<body>
+
+	<div id="qunit"></div>
+	<div id="qunit-fixture">
+	
+		<div id="loadingSpinner"></div>
+
+		<span id="userId">My</span>
+		<span id="nrTotalTracks">?</span>		
+
+		<nav id="pagination">
+			<label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" min="1" /> of <span id="totalNrPages"></span></label>
+			<button id="getPageBtn">Get page</button>
+			<button id="getPagePrev">Previous</button>
+			<button id="getPageNext">Next</button>
+		</nav>
+
+		<section>
+			<div id="recentTracks"><!-- placeholder for the track history --></div>
+			<div id="dz-root"><!-- Deezer --></div>
+		</section>
+
+		<section>
+			<span id="nrRecentTracks">?</span>
+		</section>	
+	
+	</div>
+
+	<script src="//code.jquery.com/qunit/qunit-1.14.0.js"></script>
+
+	<script>
+		window.DEBUG = true;
+	</script>
+	
+	<script src="../src/moment.min.js"></script>
+	<script src="../src/mootools-yui-compressed.js"></script>
+	<script src="../src/mootools-Request.Queue.js"></script>
+	<script src="../src/dz.js"></script>
+	<script src="../src/deezer.js"></script>
+	<script src="../src/lastFm.js"></script>
+
+	<script src="tests.js"></script>
+
+</body>
+</html>

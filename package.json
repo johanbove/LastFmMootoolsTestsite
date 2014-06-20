@@ -1,0 +1,23 @@
+{
+  "name": "lastfmmootoolstestsite",
+  "version": "0.3.6",
+  "description": "A test project to learn about Mootools and become a better web developer",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/johanbove/LastFmMootoolsTestsite.git"
+  },
+  "author": "Johan Bové",
+  "email": "me@johanbove.info",
+  "bugs": {
+    "url": "https://github.com/johanbove/LastFmMootoolsTestsite/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.3.3",
+    "grunt-contrib-uglify": "~0.5.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-less": "~0.11.2",
+    "grunt-contrib-copy": "~0.5.0"
+  }
+}

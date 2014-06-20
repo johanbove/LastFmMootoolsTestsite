@@ -29,3 +29,7 @@ Demo
 Plans
 -----
 [GitHub Issues](https://github.com/johanbove/LastFmMootoolsTestsite/issues)
+
+Todo
+----
+Use [Gruntjs](http://gruntjs.com/getting-started) for automation of building, testing, etc.

@@ -18,9 +18,7 @@ var Nav = new Class({
 
     Implements: [Options],
 
-    options: {
-        'debug': false
-    },
+    options: {},
 
     initialize: function (options) {
 
@@ -35,7 +33,6 @@ var Nav = new Class({
         this.setOptions(options);
 
         this.lastFm = this.options.lastFm;
-        this.debug = this.options.debug;
         this.page = 1;
         this.lastPage = 1;
 
@@ -70,7 +67,7 @@ var Nav = new Class({
         this.getPage = function (e) {
             e.preventDefault();
             self.page = pageNrEl.value;
-            if (self.debug) {
+            if (DEBUG) {
                 console.info('Clicked getPageBtn', self.page);
             }
             self.lastFm.page = self.page;
@@ -81,7 +78,7 @@ var Nav = new Class({
             e.preventDefault();
             self.page = parseInt(pageNrEl.value, 10) - 1;
             pageNrEl.value = self.page;
-            if (self.debug) {
+            if (DEBUG) {
                 console.info('getPagePrev', self.page);
             }
             self.lastFm.page = self.page;
@@ -92,7 +89,7 @@ var Nav = new Class({
             e.preventDefault();
             self.page = parseInt(pageNrEl.value, 10) + 1;
             pageNrEl.value = self.page;
-            if (self.debug) {
+            if (DEBUG) {
                 console.info('getPageNext', self.page);
             }
             self.lastFm.page = self.page;
@@ -121,7 +118,6 @@ var LastFm = new Class({
         apiKey: '6944bec73e711c56ae9955c77d642c98',
         mashapeKey: 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA',
         perPage: 10,
-        debug: false,
         colorTag: false,
         duckduckGo: true,
         getTracksUpdateDelay: 3 // minutes
@@ -138,7 +134,6 @@ var LastFm = new Class({
         this.username = this.options.username;
         this.apiKey = this.options.apiKey;
         this.perPage = this.options.perPage;
-        this.debug = this.options.debug;
 
         // @see http://mootools.net/docs/core/Element/Element
         this.loadingSpinnerEl = $('loadingSpinner');
@@ -152,14 +147,14 @@ var LastFm = new Class({
         // @see http://mootools.net/docs/more/Request/Request.Queue
         this.myQueue = new Request.Queue({
             onRequest: function () {
-                if (self.debug) {
+                if (DEBUG) {
                     console.info('onRequest');
                 }
                 self.loadingSpinnerEl.set('text', 'Loading...');
             },
             onComplete: function (name, instance, text, xml) {
                 self.loadingSpinnerEl.empty();
-                if (self.debug) {
+                if (DEBUG) {
                     console.info('onComplete queue: ' + name + ' response: ', text, xml);
                 }
             },
@@ -172,7 +167,7 @@ var LastFm = new Class({
                 console.error(xhr);
             },
             onEnd: function () {
-                if (self.debug) {
+                if (DEBUG) {
                     console.info("Generating track html...");
                 }
                 if (self.tracks.length) {
@@ -296,7 +291,7 @@ var LastFm = new Class({
 
                     if (self.options.colorTag) {
                         window.setTimeout(function () {
-                            if (self.debug) {
+                            if (DEBUG) {
                                 console.info("starting getColorTag request", track.image[0]['#text']);
                             }
                             self.requests.getColorTag.send('url=' + track.image[0]['#text']);
@@ -371,10 +366,10 @@ var LastFm = new Class({
                 'class': 'extBtn lastfmBtn',
                 'events': {
                     'click': function (e) {
-                        if (self.debug) {
+                        if (DEBUG) {
                             console.info('lastFm clicked!', track.url);
                         }
-                        //e.preventDefault();
+                        e.preventDefault();
                         location.href = track.url;
                     }
                 }
@@ -387,23 +382,23 @@ var LastFm = new Class({
                 'class': 'extBtn googleBtn',
                 'events': {
                     'click': function (e) {
-                        if (self.debug) {
+                        if (DEBUG) {
                             console.info('Google clicked!', 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(artist));
                         }                        
-                        //e.preventDefault();
+                        e.preventDefault();
                         location.href = 'https://www.google.com/search?hl=en&q=' + encodeURIComponent(artist);
                     }
                 }
             }).inject(btnsEl);
 
-            if (self.debug) {
+            if (DEBUG) {
                 console.info("Rendered Track", track);
             }
 
             el.inject(self.recentTracksEl);
 
             if (self.options.duckduckGo) {
-                if (self.debug) {
+                if (DEBUG) {
                     console.info("Searching DuckDuckGo for", self.lastScrobble.artist.name);
                 }
                 self.requests.getDuckDuckGoInfo.send("q=" + encodeURIComponent(self.lastScrobble.artist.name));
@@ -492,7 +487,7 @@ var LastFm = new Class({
 
                 onSuccess: function (jsonObj) {
 
-                    //if (self.debug) console.info('onSuccess', jsonObj);
+                    //if (DEBUG) console.info('onSuccess', jsonObj);
 
                     var attr;
 
@@ -590,7 +585,7 @@ var LastFm = new Class({
                 onSuccess: self.parseColors,
                 onComplete: function (name, instance, text, xml) {
                     self.loadingSpinnerEl.empty();
-                    if (self.debug) {
+                    if (DEBUG) {
                         console.info('onComplete queue: ' + name + ' response: ', text, xml);
                     }
                 },
@@ -620,7 +615,7 @@ var LastFm = new Class({
 
                     var htmlOut = "";
 
-                    if (self.debug) {
+                    if (DEBUG) {
                         console.info(jsonObj);
                         console.log("lastScrobble", self.lastScrobble, jsonObj.AbstractText.indexOf(self.lastScrobble.artist.name));
                     }
@@ -643,7 +638,7 @@ var LastFm = new Class({
                 },
                 onComplete: function (name, instance, text, xml) {
                     self.loadingSpinnerEl.empty();
-                    if (self.debug) {
+                    if (DEBUG) {
                         console.info('onComplete queue: ' + name + ' response: ', text, xml);
                     }
                 },
@@ -677,5 +672,5 @@ var LastFm = new Class({
 // @see http://mootools.net/docs/core/Utilities/DOMReady
 window.addEvent('domready', function () {
     "use strict";
-    window.lastFm = new LastFm({ 'perPage': 3, 'debug': false });
+    window.lastFm = new LastFm({ 'perPage': 3 });
 });

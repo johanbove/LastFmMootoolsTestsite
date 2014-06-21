@@ -96,6 +96,18 @@ module.exports = function (grunt) {
 					}
 				}
 			}
+		},
+		
+		// See options: https://github.com/gruntjs/grunt-contrib-qunit
+		// See: https://github.com/gruntjs/grunt-contrib-qunit/issues/15
+		qunit: {
+			all: {
+			  options: {
+				urls: [
+				  'http://localhost:8000/test/test.html',
+				]
+			  }
+			}
 		}
 
 	});
@@ -106,11 +118,12 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-contrib-qunit');
 
 
 	// this would be run by typing "grunt test" on the command line
-	grunt.registerTask('test', ['jshint']);
-
+	grunt.registerTask('lint', ['jshint']);
+	grunt.registerTask('test', ['qunit']);
 	grunt.registerTask('css', ['less']);
 
 	// Default task(s).

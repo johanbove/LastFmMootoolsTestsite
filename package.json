@@ -1,6 +1,6 @@
 {
   "name": "lastfmmootoolstestsite",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "A test project to learn about Mootools and become a better web developer",
   "repository": {
     "type": "git",
@@ -18,6 +18,7 @@
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-contrib-less": "~0.11.2",
-    "grunt-contrib-copy": "~0.5.0"
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-qunit": "~0.5.1"
   }
 }

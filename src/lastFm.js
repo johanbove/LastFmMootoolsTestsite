@@ -234,7 +234,9 @@ var LastFm = new Class({
 				tags = [];
 
 			if (track === undefined || !track.artist || !track.name) {
-				console.log("Expecting valid track!", track);
+				if(DEBUG) {
+					console.log("Expecting valid track!", track);
+				}
 				return;
 			}
 
@@ -409,7 +411,7 @@ var LastFm = new Class({
 
 			el.inject(self.recentTracksEl);
 
-			if (self.options.duckduckGo) {
+			if (self.options.duckduckGo && self.lastScrobble && self.lastScrobble.artist) {
 				if (DEBUG) {
 					console.info("Searching DuckDuckGo for", self.lastScrobble.artist.name);
 				}
@@ -486,6 +488,51 @@ var LastFm = new Class({
 
 		};
 
+		// Executes whenever the json request is okay
+		// @param {object} jsonObj
+		this.getRecentTrackSuccess = function(jsonObj) {
+		
+			//if (DEBUG) console.info('onSuccess', jsonObj);
+
+			var attr;
+
+			if (jsonObj.recenttracks && typeof jsonObj.recenttracks['@attr'] === 'undefined') {
+				console.error('Error retrieving tracks!', jsonObj);
+				return;
+			}
+
+			if (typeof jsonObj.recenttracks === "undefined") {
+				console.log("Error with jsonObj.recentracks");
+				return;
+			}
+
+			attr = jsonObj.recenttracks['@attr'];
+
+			self.totalTracks = attr.total;
+			self.lastPage = attr.totalPages;
+
+			self.totalNrPagesEl.set('text', self.lastPage);
+			self.nrTotalTracksEl.set('text', self.totalTracks);
+			self.nrrecentTracksEl.set('text', self.perPage);
+
+			self.userIdEl.set('text', attr.user + "'s");
+
+			self.tracks = jsonObj.recenttracks.track;
+
+			self.lastScrobble = self.tracks[0];
+
+			self.addRecentTracks();
+
+			self.nav.init(self);
+
+			window.clearInterval(self.getTracksInterval);
+
+			if (self.page === 1) {
+				self.getTracksInterval = window.setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
+			}
+		
+		};
+		
 		// Getting the list of recent tracks from Last.fm
 		// @returns Request.JSON for queuing
 		this.getRecentTracks = function () {
@@ -494,53 +541,8 @@ var LastFm = new Class({
 			// @see http://mootools.net/docs/core/Request/Request.JSON
 			// @see http://mootools.net/docs/core/Request/Request
 			return new Request.JSON({
-
 				url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&format=json&extended=1&limit=' + encodeURIComponent(self.perPage),
-
-				onSuccess: function (jsonObj) {
-
-					//if (DEBUG) console.info('onSuccess', jsonObj);
-
-					var attr;
-
-					if (jsonObj.recenttracks && typeof jsonObj.recenttracks['@attr'] === 'undefined') {
-						console.error('Error retrieving tracks!', jsonObj);
-						return;
-					}
-
-					if (typeof jsonObj.recenttracks === "undefined") {
-						console.log("Error with jsonObj.recentracks");
-						return;
-					}
-
-					attr = jsonObj.recenttracks['@attr'];
-
-					self.totalTracks = attr.total;
-					self.lastPage = attr.totalPages;
-
-					self.totalNrPagesEl.set('text', self.lastPage);
-					self.nrTotalTracksEl.set('text', self.totalTracks);
-					self.nrrecentTracksEl.set('text', self.perPage);
-
-					self.userIdEl.set('text', attr.user + "'s");
-
-					self.tracks = jsonObj.recenttracks.track;
-
-					self.lastScrobble = self.tracks[0];
-
-					self.addRecentTracks();
-
-					self.nav.init(self);
-
-					window.clearInterval(self.getTracksInterval);
-
-					if (self.page === 1) {
-						self.getTracksInterval = window.setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
-					}
-
-
-				}
-
+				onSuccess: self.getRecentTrackSuccess
 			});
 
 		};
@@ -677,16 +679,25 @@ var LastFm = new Class({
 		this.myQueue.addRequest("getRecentTracks", this.requests.getRecentTracks);
 		this.myQueue.addRequest("getTrackInfo", this.requests.getTrackInfo);
 
-		this.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+		this.init = function () {		
+			// Start initial tracks request
+			self.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+			self.nav = new Nav({ 'lastFm': self });
+			return self;			
+		};		
 
-		self.nav = new Nav({ 'lastFm': self });
-
+		return this;
+		
 	}
 
 });
 
+// Start the application
 // @see http://mootools.net/docs/core/Utilities/DOMReady
 window.addEvent('domready', function () {
 	"use strict";
-	window.lastFm = new LastFm({ 'perPage': 3 });
+	if(typeof LastFm !== "undefined") {
+		window.lastFm = new LastFm({ 'perPage': 3 });
+		window.lastFm.init();
+	}
 });

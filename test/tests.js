@@ -21,3 +21,23 @@ QUnit.test("Nav", function (assert) {
 	assert.ok(myNav.isAtEnd() === false, "Expecting nav not to be at the end");
 
 });
+
+// TODO: add HTML fixtures
+QUnit.test("lastFm basics", function (assert) {
+	var mylastFm = new LastFm({ 'perPage': 1 });
+	mylastFm.init();
+	// Testing LastFm object
+	assert.ok(mylastFm.username.length > 0, "Expecting a username");
+	assert.ok(mylastFm.nav.page === 1, "Expecting nav of lastfm page to start at page 1");
+});
+
+/* TODO: fix this	
+QUnit.asyncTest("async1", function(assert) {	
+	var mylastFm = new LastFm({ 'perPage': 1 });
+	mylastFm.getRecentTrackSuccess = function() {
+		assert.ok(mylastFm.tracks.length > 0, "Expecting tracks");
+		start();
+	}
+	mylastFm.init();	
+});
+*/

@@ -1,6 +1,27 @@
 /*jshint undef: true, unused: true, browser: true */
 /*global Class, Options, console, $, $$, Events, Request, Element, moment, deezer */
 
+/* i18n */
+var i18n_en = {
+	'Loading...': 'Loading...',
+	'An error occurred': 'An error occurred',
+	'Failed to connect at': 'Failed to connect at',
+	'A timeout occurred connecting to the remote source!': 'A timeout occurred connecting to the remote source!',
+	'Missing image': 'Missing image',
+	'or': 'or',
+	'Loading track info...': 'Loading track info...',
+	'Loading album art colors...': 'Loading album art colors...',
+	'Searching through DuckDuckGo...': 'Searching through DuckDuckGo...',
+	'Source': 'Source'
+};
+
+// Replaces string with language variant. Returns the given string when no translation is found.
+// @param {string} str
+var i18n = function (str) {
+	var lang = i18n_en;
+	return lang[str] || str;
+};
+
 /**
  * Mootools Class for Track
  */
@@ -162,7 +183,7 @@ var LastFm = new Class({
 				if (DEBUG) {
 					console.info('onRequest');
 				}
-				self.loadingSpinnerEl.set('text', 'Loading...');
+				self.loadingSpinnerEl.set('text', i18n('Loading...'));
 			},
 			onComplete: function (name, instance, text, xml) {
 				self.loadingSpinnerEl.empty();
@@ -171,11 +192,11 @@ var LastFm = new Class({
 				}
 			},
 			onError: function (code, error) {
-				self.loadingSpinnerEl.set('text', 'An error occurred: (' + code + ') ' + error);
+				self.loadingSpinnerEl.set('text', i18n('An error occurred') + ': (' + code + ') ' + error);
 				console.error(code, error);
 			},
 			onFailure: function (xhr) {
-				self.loadingSpinnerEl.set('text', 'Failed to connect at ' + xhr);
+				self.loadingSpinnerEl.set('text', i18n('Failed to connect at') + ' ' + xhr);
 				console.error(xhr);
 			},
 			onEnd: function () {
@@ -189,7 +210,7 @@ var LastFm = new Class({
 				}
 			},
 			onTimeout: function () {
-				self.loadingSpinnerEl.set('text', 'A timeout occurred connecting to the remote source!');
+				self.loadingSpinnerEl.set('text', i18n('A timeout occurred connecting to the remote source!'));
 			}
 		});
 
@@ -222,7 +243,7 @@ var LastFm = new Class({
 				googleArtistBtnEl,
 				mbid,
 				infoEl,
-				missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': 'Missing thumb', 'width': 128, 'height': 128 }),
+				missingImgEl = new Element('img.thumb.missing', { 'src': '', 'alt': i18n('Missing image'), 'width': 128, 'height': 128 }),
 				missingImgElClone,
 				timestamp = 0,
 				timestampFromNow = '',
@@ -355,7 +376,7 @@ var LastFm = new Class({
 			infoEl = new Element('div.info', { 'html': '' }).inject(el);
 
 			if (timestampCalendar.length && timestampFromNow.length) {
-				dateEl = new Element('span.date', { 'html': '<span class="tilde">~</span>' + timestampCalendar + '<br /> or ' + timestampFromNow + ' ' + durationEl }).inject(metaEl);
+				dateEl = new Element('span.date', { 'html': '<span class="tilde">~</span>' + timestampCalendar + '<br /> ' + i18n('or') + ' ' + timestampFromNow + ' ' + durationEl }).inject(metaEl);
 			}
 
 			// Buttons
@@ -547,6 +568,34 @@ var LastFm = new Class({
 
 		};
 
+		// Handles track info from remote
+		// @param {object} jsonObj
+		this.getTrackInfoSuccess = function(jsonObj) {
+		
+			//console.info('onSuccess getTrackInfo', jsonObj.track);
+
+			var info = jsonObj.track;
+
+			// Check if we actually have tracks to update
+			if (self.tracks.length) {
+
+				// find the track we just updated and add the meta data
+				self.tracks.each(function (track, index) {
+					if (track.mbid === info.mbid) {
+						self.tracks[index].info = info;
+					}
+				});
+				// Single track found, but check it's okay.
+			} else {
+				if (self.tracks.mbid && self.tracks.mbid === info.mbid) {
+					self.tracks.info = info;
+				}
+			}
+		
+			return self.tracks;
+		
+		};
+		
 		// @param {object} track
 		// @param {function} callback
 		this.getTrackInfo = function () {
@@ -557,32 +606,10 @@ var LastFm = new Class({
 				url: 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&autocorrect=1&format=json',
 
 				onRequest: function () {
-					self.loadingSpinnerEl.set('text', 'Loading track info...');
+					self.loadingSpinnerEl.set('text', i18n('Loading track info...'));
 				},
 
-				onSuccess: function (jsonObj) {
-
-					//console.info('onSuccess getTrackInfo', jsonObj.track);
-
-					var info = jsonObj.track;
-
-					// Check if we actually have tracks to update
-					if (self.tracks.length) {
-
-						// find the track we just updated and add the meta data
-						self.tracks.each(function (track, index) {
-							if (track.mbid === info.mbid) {
-								self.tracks[index].info = info;
-							}
-						});
-						// Single track found, but check it's okay.
-					} else {
-						if (self.tracks.mbid && self.tracks.mbid === info.mbid) {
-							self.tracks.info = info;
-						}
-					}
-
-				}
+				onSuccess: self.getTrackInfoSuccess
 
 			});
 
@@ -594,7 +621,7 @@ var LastFm = new Class({
 				url: 'https://apicloud-colortag.p.mashape.com/tag-url.json?palette=w3c&sort=weight',
 				headers: { 'X-Mashape-Authorization': self.options.mashapeKey },
 				onRequest: function () {
-					self.loadingSpinnerEl.set('text', 'Loading album art colors...');
+					self.loadingSpinnerEl.set('text', i18n('Loading album art colors...'));
 				},
 				onSuccess: self.parseColors,
 				onComplete: function (name, instance, text, xml) {
@@ -621,7 +648,7 @@ var LastFm = new Class({
 				method: 'get',
 				noCache: true,
 				onRequest: function () {
-					self.loadingSpinnerEl.set('text', 'Searching through DuckDuckGo ...');
+					self.loadingSpinnerEl.set('text', i18n('Searching through DuckDuckGo...'));
 					// Reset initially
 					self.clearInfoEl();
 				},
@@ -647,7 +674,7 @@ var LastFm = new Class({
 							htmlOut += '<img src="' + jsonObj.Image + '" alt="' + jsonObj.Heading + '" />';
 						}
 
-						htmlOut += '<p>' + jsonObj.AbstractText + '</p>' + '<p>Source: <a href="' + jsonObj.AbstractURL + '">' + jsonObj.AbstractSource + '</a></p>';
+						htmlOut += '<p>' + jsonObj.AbstractText + '</p>' + '<p>' + i18n('Source') + ': <a href="' + jsonObj.AbstractURL + '">' + jsonObj.AbstractSource + '</a></p>';
 
 						$$('#track-0 .info').set('html', htmlOut);
 

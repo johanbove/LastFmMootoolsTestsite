@@ -103,7 +103,7 @@ var Nav = new Class({
 				console.info('Clicked getPageBtn', self.page);
 			}
 			self.lastFm.page = self.page;
-			self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+			self.lastFm.requests.getRecentTracks.send('user=' + encodeURIComponent(self.lastFm.username) + '&page=' + encodeURIComponent(self.page));
 			return self.page;
 		};
 
@@ -115,7 +115,7 @@ var Nav = new Class({
 				console.info('getPagePrev', self.page);
 			}
 			self.lastFm.page = self.page;
-			self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+			self.lastFm.requests.getRecentTracks.send('user=' + encodeURIComponent(self.lastFm.username) + '&page=' + encodeURIComponent(self.page));
 			return self.page;
 		};
 
@@ -127,7 +127,7 @@ var Nav = new Class({
 				console.info('getPageNext', self.page);
 			}
 			self.lastFm.page = self.page;
-			self.lastFm.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+			self.lastFm.requests.getRecentTracks.send('user=' + encodeURIComponent(self.lastFm.username) + '&page=' + encodeURIComponent(self.page));
 			return self.page;
 		};
 
@@ -149,9 +149,10 @@ var LastFm = new Class({
 
 	// Defaults
 	options: {
-		username: 'joe-1',
+		username: '',
 		apiKey: '6944bec73e711c56ae9955c77d642c98',
 		mashapeKey: 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA',
+		secret: '583dd9a2f787df20b53660bb83d79b94',
 		perPage: 10,
 		colorTag: false,
 		duckduckGo: true,
@@ -168,6 +169,7 @@ var LastFm = new Class({
 
 		this.username = this.options.username;
 		this.apiKey = this.options.apiKey;
+		this.secret = this.options.secret;
 		this.perPage = this.options.perPage;
 
 		// @see http://mootools.net/docs/core/Element/Element
@@ -226,7 +228,10 @@ var LastFm = new Class({
 		this.lastPage = 1;
 		this.totalTracks = 0;
 		this.tracks = [];
-		this.lastScrobble = {};
+		this.lastScrobble = {};		
+		this.signature = "";
+		this.token = "";
+		this.usersession = {};
 
 		// Creates the HTML code used to display the scrobbled track.
 		// @param {object} track
@@ -508,11 +513,11 @@ var LastFm = new Class({
 
 			if (self.tracks.length) {
 				self.tracks.each(function (track) {
-					self.requests.getTrackInfo.send('mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
+					self.requests.getTrackInfo.send('user=' + encodeURIComponent(self.username) + '&mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
 				});
 			} else {
 				track = self.tracks;
-				self.requests.getTrackInfo.send('mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
+				self.requests.getTrackInfo.send('user=' + encodeURIComponent(self.username) + '&mbid=' + encodeURIComponent(track.mbid) + '&artist=' + encodeURIComponent(track.artist.name) + '&track=' + encodeURIComponent(track.name));
 			}
 
 		};
@@ -557,7 +562,7 @@ var LastFm = new Class({
 			window.clearInterval(self.getTracksInterval);
 
 			if (self.page === 1) {
-				self.getTracksInterval = window.setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay);
+				self.getTracksInterval = window.setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay, 'user=' + encodeURIComponent(self.username));
 			}
 		
 		};
@@ -570,7 +575,7 @@ var LastFm = new Class({
 			// @see http://mootools.net/docs/core/Request/Request.JSON
 			// @see http://mootools.net/docs/core/Request/Request
 			return new Request.JSON({
-				url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&format=json&extended=1&limit=' + encodeURIComponent(self.perPage),
+				url: 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=' + encodeURIComponent(self.apiKey) + '&format=json&extended=1&limit=' + encodeURIComponent(self.perPage),
 				onSuccess: self.getRecentTrackSuccess
 			});
 
@@ -611,7 +616,7 @@ var LastFm = new Class({
 			// This a Request.Queue so it can be used in the getrecenttracks request
 			return new Request.JSON({
 
-				url: 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&user=' + encodeURIComponent(self.username) + '&api_key=' + encodeURIComponent(self.apiKey) + '&autocorrect=1&format=json',
+				url: 'http://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=' + encodeURIComponent(self.apiKey) + '&autocorrect=1&format=json',
 
 				onRequest: function () {
 					self.loadingSpinnerEl.set('text', i18n('Loading track info...'));
@@ -621,6 +626,42 @@ var LastFm = new Class({
 
 			});
 
+		};
+		
+		this.getSession = function() {
+			
+			return new Request({
+			
+				url: 'http://ws.audioscrobbler.com/2.0/?method=auth.getsession&format=json&api_key=' + encodeURIComponent(self.apiKey),
+
+				onRequest: function () {
+					self.loadingSpinnerEl.set('text', i18n('Getting session...'));
+				},
+
+				onSuccess: function(jsonObj) {
+				
+					self.usersession = JSON.parse(jsonObj).session;
+				
+					console.info("self.usersession", self.usersession);
+					
+					if(!self.usersession || !self.usersession.name) {
+						throw "Invalid user session!";
+					}
+					
+					$$('.login').toggleClass('hidden');
+					$$('.app').toggleClass('hidden');
+					
+					self.username = self.usersession.name;
+					
+					// Start initial tracks request
+					self.requests.getRecentTracks.send('user=' + encodeURIComponent(self.username) + '&page=' + encodeURIComponent(self.page));
+					self.nav = new Nav({ 'lastFm': self });
+					
+				},
+				
+				'method': 'get'
+			
+			});
 		};
 
 		// Returns color codes for the album art
@@ -705,16 +746,18 @@ var LastFm = new Class({
 		// Collect all requests here
 
 		this.requests = {
+			'getSession': self.getSession(),
 			'getRecentTracks': self.getRecentTracks(),
 			'getTrackInfo': self.getTrackInfo(),
 			'getColorTag': self.getColorTag(),
 			'getDuckDuckGoInfo': self.getDuckDuckGoInfo()
 		};
 
+		this.myQueue.addRequest("getSession", this.requests.getSession);
 		this.myQueue.addRequest("getRecentTracks", this.requests.getRecentTracks);
 		this.myQueue.addRequest("getTrackInfo", this.requests.getTrackInfo);
 
-		this.token = getURLParameter('token');
+		this.token = getURLParameter('token').replace('/','');
 		
 		// @see: http://www.last.fm/api/webauth
 		this.webauth = function () {
@@ -725,15 +768,17 @@ var LastFm = new Class({
 		
 			setTimeout(function(){
 		
-				if(self.token !== "null" && self.token.length) {
+				if(self.token !== "null" && self.token.length > 1) {
 				
-					// TODO: get LastFM session: http://www.last.fm/api/webauth
+					// Start a LastFm session
+					self.signature = hex_md5('api_key' + self.apiKey + 'methodauth.getsessiontoken' + self.token + self.secret);
 				
-					console.log('token', self.token);
-				
-					// Start initial tracks request
-					self.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
-					self.nav = new Nav({ 'lastFm': self });
+					self.requests.getSession.send('token=' + encodeURIComponent(self.token) + '&api_sig=' + self.signature);			
+					
+					if(DEBUG) {
+						console.log('token', self.token);
+						console.log('signature', self.signature);
+					}
 				
 				} else {
 				

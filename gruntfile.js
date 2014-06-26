@@ -57,7 +57,8 @@ module.exports = function (grunt) {
 					'moment': true,
 					'deezer': true,
 					'DZ': true,
-					'module': true
+					'module': true,
+					'hex_md5': true
 				},
 				undef: true,
 				unused: true,

@@ -23,7 +23,15 @@ module.exports = function (grunt) {
 				sourceMapName: 'build/<%= pkg.name %>-v<%= pkg.version %>-source.js'
 			},
 			build: {
-				src: ['src/moment.min.js', 'src/mootools-yui-compressed.js', 'src/mootools-Request.Queue.js', 'src/dz.js', 'src/deezer.js', 'src/lastFm.js'],
+				src: [
+				'src/moment.min.js',
+				'src/mootools-yui-compressed.js',
+				'src/mootools-Request.Queue.js',
+				// http://pajhome.org.uk/crypt/md5/
+				'src/md5-min.js',
+				'src/dz.js',
+				'src/deezer.js',
+				'src/lastFm.js'],
 				dest: 'build/<%= pkg.name %>-v<%= pkg.version %>.min.js'
 			}
 		},

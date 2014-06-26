@@ -1,6 +1,14 @@
 /*jshint undef: true, unused: true, browser: true */
 /*global Class, Options, console, $, $$, Events, Request, Element, moment, deezer */
 
+// @see: http://stackoverflow.com/questions/1403888/get-escaped-url-parameter
+function getURLParameter(name) {
+    return decodeURI(
+        (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+    );
+}
+
+
 /* i18n */
 var i18n_en = {
 	'Loading...': 'Loading...',
@@ -706,11 +714,37 @@ var LastFm = new Class({
 		this.myQueue.addRequest("getRecentTracks", this.requests.getRecentTracks);
 		this.myQueue.addRequest("getTrackInfo", this.requests.getTrackInfo);
 
-		this.init = function () {		
-			// Start initial tracks request
-			self.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
-			self.nav = new Nav({ 'lastFm': self });
-			return self;			
+		this.token = getURLParameter('token');
+		
+		// @see: http://www.last.fm/api/webauth
+		this.webauth = function () {
+			location.href = 'http://www.last.fm/api/auth/?api_key=' + self.apiKey + '&cb=' + location.origin + location.pathname;
+		};
+		
+		this.init = function () {
+		
+			setTimeout(function(){
+		
+				if(self.token !== "null" && self.token.length) {
+				
+					// TODO: get LastFM session: http://www.last.fm/api/webauth
+				
+					console.log('token', self.token);
+				
+					// Start initial tracks request
+					self.requests.getRecentTracks.send('page=' + encodeURIComponent(self.page));
+					self.nav = new Nav({ 'lastFm': self });
+				
+				} else {
+				
+					self.webauth();
+				
+				}
+			
+			}, 2000);			
+			
+			return self;
+			
 		};		
 
 		return this;

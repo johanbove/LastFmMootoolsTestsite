@@ -17,11 +17,6 @@ CSS is being pre-processed using [LESS](http://lesscss.org/).
 
 Build automation done using [GruntJS](http://gruntjs.com/).
 
-Releases
---------
-
-Current version: [v0.3.6-beta](https://github.com/johanbove/LastFmMootoolsTestsite/releases/tag/v0.3.6-beta)
-
 Source
 ------
 Check out the [source on Github](https://github.com/johanbove/LastFmMootoolsTestsite).

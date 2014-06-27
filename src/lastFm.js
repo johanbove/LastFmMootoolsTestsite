@@ -1,13 +1,14 @@
 /*jshint undef: true, unused: true, browser: true */
 /*global Class, Options, console, $, $$, Events, Request, Element, moment, deezer */
 
+//var DEBUG = true;
+
 // @see: http://stackoverflow.com/questions/1403888/get-escaped-url-parameter
 function getURLParameter(name) {
     return decodeURI(
         (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
     );
 }
-
 
 /* i18n */
 var i18n_en = {
@@ -20,7 +21,8 @@ var i18n_en = {
 	'Loading track info...': 'Loading track info...',
 	'Loading album art colors...': 'Loading album art colors...',
 	'Searching through DuckDuckGo...': 'Searching through DuckDuckGo...',
-	'Source': 'Source'
+	'Source': 'Source',
+	'Invalid user session!': 'Invalid user session!'
 };
 
 // Replaces string with language variant. Returns the given string when no translation is found.
@@ -151,10 +153,10 @@ var LastFm = new Class({
 	options: {
 		username: '',
 		apiKey: '6944bec73e711c56ae9955c77d642c98',
-		mashapeKey: 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA',
+		mashapeKey: '8qGGAQo17bmshYBZM24uZppxzWAnp1ViEsqjsnnUPNcgagxeCs',
 		secret: '583dd9a2f787df20b53660bb83d79b94',
 		perPage: 10,
-		colorTag: false,
+		colorTag: true,
 		duckduckGo: true,
 		getTracksUpdateDelay: 3 // minutes
 	},
@@ -265,7 +267,8 @@ var LastFm = new Class({
 				durationEl = "",
 				genre = "",
 				genreEl = "",
-				tags = [];
+				tags = [],
+				refreshDelay = 1000 * 60 * self.options.getTracksUpdateDelay;
 
 			if (track === undefined || !track.artist || !track.name) {
 				if(DEBUG) {
@@ -289,6 +292,9 @@ var LastFm = new Class({
 			if (track.info) {
 
 				if (track.info.duration && +track.info.duration > 0) {
+					
+					refreshDelay = +track.info.duration;
+				
 					// Using plugin for moment.js to display duration in specific format
 					durationEl = '(' + moment.duration(+track.info.duration).format('m:ss') + ')';
 				}
@@ -343,9 +349,31 @@ var LastFm = new Class({
 								console.info("starting getColorTag request", track.image[0]['#text']);
 							}
 							self.requests.getColorTag.send('url=' + track.image[0]['#text']);
-						}, 3000);
+						}, 3000); // 3 seconds delay
 					}
 
+				}
+				
+				// Get next song automatically or when current song is done.
+				// TODO: calculate remaining time from current time, start of playing and duration of the song
+				
+				if (self.page === 1) {
+				
+					if(DEBUG) {
+						console.info("track refresh in", refreshDelay);
+					}
+				
+					window.setTimeout(function() {
+						self.requests.getRecentTracks.send('user=' + encodeURIComponent(self.username));
+					}, refreshDelay);
+					
+				}
+				
+				if (self.options.duckduckGo && self.lastScrobble && self.lastScrobble.artist) {
+					if (DEBUG) {
+						console.info("Searching DuckDuckGo for", self.lastScrobble.artist.name);
+					}
+					self.requests.getDuckDuckGoInfo.send("q=" + encodeURIComponent(self.lastScrobble.artist.name));
 				}
 
 			}
@@ -444,13 +472,7 @@ var LastFm = new Class({
 			}
 
 			el.inject(self.recentTracksEl);
-
-			if (self.options.duckduckGo && self.lastScrobble && self.lastScrobble.artist) {
-				if (DEBUG) {
-					console.info("Searching DuckDuckGo for", self.lastScrobble.artist.name);
-				}
-				self.requests.getDuckDuckGoInfo.send("q=" + encodeURIComponent(self.lastScrobble.artist.name));
-			}
+			
 
 		};
 
@@ -557,13 +579,7 @@ var LastFm = new Class({
 
 			self.addRecentTracks();
 
-			self.nav.init(self);
-
-			window.clearInterval(self.getTracksInterval);
-
-			if (self.page === 1) {
-				self.getTracksInterval = window.setInterval(self.requests.getRecentTracks.send, 1000 * 60 * self.options.getTracksUpdateDelay, 'user=' + encodeURIComponent(self.username));
-			}
+			self.nav.init(self);			
 		
 		};
 		
@@ -628,6 +644,7 @@ var LastFm = new Class({
 
 		};
 		
+		// Authenticates using LastFM
 		this.getSession = function() {
 			
 			return new Request({
@@ -642,10 +659,12 @@ var LastFm = new Class({
 				
 					self.usersession = JSON.parse(jsonObj).session;
 				
-					console.info("self.usersession", self.usersession);
+					if(DEBUG) {
+						console.info("self.usersession", self.usersession);
+					}
 					
 					if(!self.usersession || !self.usersession.name) {
-						throw "Invalid user session!";
+						throw i18n("Invalid user session!");
 					}
 					
 					$$('.login').toggleClass('hidden');
@@ -669,6 +688,7 @@ var LastFm = new Class({
 			return new Request.JSON({
 				url: 'https://apicloud-colortag.p.mashape.com/tag-url.json?palette=w3c&sort=weight',
 				headers: { 'X-Mashape-Authorization': self.options.mashapeKey },
+				noCache: true,
 				onRequest: function () {
 					self.loadingSpinnerEl.set('text', i18n('Loading album art colors...'));
 				},

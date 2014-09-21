@@ -153,7 +153,7 @@ var LastFm = new Class({
 	options: {
 		username: '',
 		apiKey: '6944bec73e711c56ae9955c77d642c98',
-		mashapeKey: '8qGGAQo17bmshYBZM24uZppxzWAnp1ViEsqjsnnUPNcgagxeCs',
+		mashapeKey: 'XyzWpKDaet1l1rba7RgboqNPnqjKX6RA',
 		secret: '583dd9a2f787df20b53660bb83d79b94',
 		perPage: 10,
 		colorTag: true,

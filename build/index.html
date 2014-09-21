@@ -1,79 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Scrobbled! - v0.3.8</title>
-		<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
-		<link rel="stylesheet" href="StyleSheet.css">
-	</head>
-	<body>
+    <head>
+        <meta charset="utf-8">
+        <title>Scrobbled! - v0.3.9</title>
+        <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
+        <link rel="stylesheet" href="StyleSheet.css">
+    </head>
+    <body>
 
-		<div class="background"><!-- placeholder --></div>
+        <div class="background"><!-- placeholder --></div>
 
-		<div class="wrapper">
+        <div class="wrapper">
 
-			<div id="loadingSpinner"></div>
+            <div id="loadingSpinner"></div>
 
-			<div class="login visible">
-			
-				<header>
-					<h1>Scrobbled!</h1>					
-				</header>
-			
-				<section>
-					<p>Connecting with LastFM. Please wait&hellip;</p>
-				</section>
-			
-			</div>
-			
-			<div class="app hidden">
-			
-				<header>
-					<h1>Scrobbled!</h1>
-					<h2><span id="userId">My</span> most recent scrobbles from a total of <span id="nrTotalTracks">?</span></h2>
-				</header>
+            <div class="login visible">
 
-				<noscript><section><p><strong>Please enable JavaScript!</strong></p></section></noscript>
+                <header>
+                    <h1>Scrobbled!</h1>
+                </header>
 
-				<nav id="pagination">
-					<label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" min="1" /> of <span id="totalNrPages"></span></label>
-					<button id="getPageBtn">Get page</button>
-					<button id="getPagePrev">Previous</button>
-					<button id="getPageNext">Next</button>
-				</nav>
+                <section>
+                    <p>Connecting with LastFM. Please wait&hellip;</p>
+                </section>
 
-				<section>
-					<div id="recentTracks"><!-- placeholder for the track history --></div>
-					<div id="dz-root"><!-- Deezer --></div>
-				</section>
+            </div>
 
-				<section>
-					<h3>About</h3>
-					<p>This little app displays the latest <span id="nrRecentTracks">?</span> tracks <a href="http://last.fm/user/joe-1">I have been listening to</a>. The list updates itself every three minutes. I created it to learn the <a href="http://mootools.net/">MooTools</a> JavaScript library, and also for monkeying around with CSS3, Github and other tools. I call it my &quot;<em>Last.fm-Deezer-Scrobbling-MooTools</em>&quot; project.</p>
-					<p>Current version: v0.3.8</p>
-					<h3>Credits</h3>
-					<p>All registered plays are tracked using the <a href="http://www.last.fm/api">Last.fm AudioScrobbler</a>. Most track plays are scrobbled from <a href="http://www.deezer.com">Deezer</a> and <a href="http://soundcloud.com">soundcloud.com</a>. Uses <a href="http://momentjs.com/">momentjs</a> for date parsing. JavaScript concatenation done using <a href="https://github.com/mishoo/UglifyJS2">UglifyJS2</a>. Build automation done with <a href="http://gruntjs.com/">GruntJS</a>.</p>
-				</section>
+            <div class="app hidden">
 
-			</div>
-				
-			<footer>
-				<address>By <a href="http://twitter.com/johanbove">@johanbove</a> - <a href="https://github.com/johanbove/LastFmMootoolsTestsite">Github history</a></address>
-			</footer>
+                <header>
+                    <h1>Scrobbled!</h1>
+                    <h2><span id="userId">My</span> most recent scrobbles from a total of <span id="nrTotalTracks">?</span></h2>
+                </header>
 
-		</div>
+                <noscript><section><p><strong>Please enable JavaScript!</strong></p></section></noscript>
 
-		<script src="lastfmmootoolstestsite-v0.3.8.min.js"></script>
+                <nav id="pagination">
+                    <label for="pageNr">Page <input type="number" id="pageNr" value="1" class="numberInput" min="1" /> of <span id="totalNrPages"></span></label>
+                    <button id="getPageBtn">Get page</button>
+                    <button id="getPagePrev">Previous</button>
+                    <button id="getPageNext">Next</button>
+                </nav>
 
-		<script>
-		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+                <section>
+                    <div id="recentTracks"><!-- placeholder for the track history --></div>
+                    <div id="dz-root"><!-- Deezer --></div>
+                </section>
 
-		  ga('create', 'UA-298957-6', 'johanbove.info');
-		  ga('send', 'pageview');
-		</script>
+                <section>
+                    <h3>About</h3>
+                    <p>This little app displays the latest <span id="nrRecentTracks">?</span> tracks <a href="http://last.fm/user/joe-1">you have been listening to</a>. The list updates itself every three minutes.</p>
+                    <p>I created it to learn the <a href="http://mootools.net/">MooTools</a> JavaScript library, and also for monkeying around with CSS3, Github and other tools. I call it my &quot;<em>Last.fm-Deezer-Scrobbling-MooTools</em>&quot; project.</p>
+                    <p>Current version: v0.3.9</p>
+                    <h3>Credits</h3>
+                    <p>All registered plays are tracked using the <a href="http://www.last.fm/api">Last.fm AudioScrobbler</a>. Most track plays are scrobbled from <a href="http://www.deezer.com">Deezer</a> and <a href="http://soundcloud.com">soundcloud.com</a>. Uses <a href="http://momentjs.com/">momentjs</a> for date parsing. JavaScript concatenation done using <a href="https://github.com/mishoo/UglifyJS2">UglifyJS2</a>. Build automation done with <a href="http://gruntjs.com/">GruntJS</a>.</p>
+                </section>
 
-	</body>
+            </div>
+
+            <footer>
+                <address>By <a href="http://twitter.com/johanbove">@johanbove</a> - <a href="https://github.com/johanbove/LastFmMootoolsTestsite">Github history</a></address>
+            </footer>
+
+        </div>
+
+        <script src="lastfmmootoolstestsite-v0.3.9.min.js"></script>
+
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-298957-6', 'johanbove.info');
+          ga('send', 'pageview');
+        </script>
+
+    </body>
 </html>

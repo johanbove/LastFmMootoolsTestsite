@@ -28,3 +28,6 @@ Demo
 Plans
 -----
 [GitHub Issues](https://github.com/johanbove/LastFmMootoolsTestsite/issues)
+
+
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)

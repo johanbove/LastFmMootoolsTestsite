@@ -15,7 +15,7 @@ JavaScript concatenation is done with [UglifyJS2](https://github.com/mishoo/Ugli
 
 CSS is being pre-processed using [LESS](http://lesscss.org/).
 
-Build automation done using [GruntJS](http://gruntjs.com/).
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 
 Source
 ------
@@ -28,6 +28,3 @@ Demo
 Plans
 -----
 [GitHub Issues](https://github.com/johanbove/LastFmMootoolsTestsite/issues)
-
-
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
